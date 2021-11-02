@@ -1,10 +1,29 @@
-import { autorun } from 'mobx'
-import { useCallback, useState } from 'react'
+import { autorun, observable, AnnotationsMap } from 'mobx'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-export function useObservable() {
-  const [count, setCount] = useState(0)
+type Store = Record<string, any>
 
-  const increment = useCallback(() => setCount((x) => x + 1), [])
+type Initializer = () => Store
 
-  return { count, increment }
+export function useObservable(initializer: Initializer, annotations?: AnnotationsMap<Store, never>) {
+
+  let ref = useRef(observable(initializer(), annotations, { autoBind: true }))
+
+  let initialized = useRef(false)
+  let [dummy, setDummy] = useState(0)
+
+  useEffect(() => {
+    autorun(() => {
+      if (!initialized.current) {
+        console.info('init observer');
+        Object.keys(ref.current).forEach(key => ref.current[key])
+        initialized.current = true
+      } else {
+        setDummy(i => ++i)
+        console.info('called');
+      }
+    })
+  }, [])
+  console.info('render ' + dummy);
+  return ref.current
 }
