@@ -1,5 +1,5 @@
 {
-  "name": "use-mobx",
+  "name": "use-mobx-observable",
   "version": "0.0.1",
   "description": "Using mobx observable with react hooks",
   "main": "dist/index.js",
