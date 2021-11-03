@@ -1,14 +1,14 @@
 {
   "name": "use-mobx-observable",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Using mobx observable with react hooks",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "test": "jest"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "drew.xiu",
+  "license": "MIT",
   "peerDependencies": {
     "mobx": "^6",
     "react": "^16.8"
