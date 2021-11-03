@@ -1,5 +1,7 @@
 # use-mobx-observable
 
+* EARLY VERSION, NOT STABLE
+
 Use mobx observable like `useState`
 
 ### Install

@@ -1,6 +1,6 @@
 {
   "name": "use-mobx-observable",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Using mobx observable with react hooks",
   "main": "dist/index.js",
   "scripts": {
@@ -10,8 +10,8 @@
   "author": "drew.xiu",
   "license": "MIT",
   "peerDependencies": {
-    "mobx": "^6",
-    "react": "^16.8"
+    "mobx": ">=6",
+    "react": ">=16.8"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.0",
