@@ -1,16 +1,23 @@
 import { autorun, observable, AnnotationsMap } from 'mobx'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type Store = Record<string, any>
 
-type Initializer = () => Store
+/**
+ * 
+ * @param {() => Observable} initializer 
+ * @param {AnnotationsMap<T, never>)} annotations 
+ * @returns {Observable} store
+ */
+export function useObservable<T extends Store>(initializer: () => T, annotations?: AnnotationsMap<T, never>): T {
 
-export function useObservable(initializer: Initializer, annotations?: AnnotationsMap<Store, never>) {
-
-  let [store, keys] = useState(() => {
+  let { store, keys } = useState(() => {
     let obj = initializer()
     let keys = Object.keys(obj)
-    return [observable(obj, annotations, { autoBind: true }), keys]
+    return {
+      store: observable(obj, annotations, { autoBind: true }),
+      keys,
+    }
   })[0]
 
   let initialized = useRef(false)

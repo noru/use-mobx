@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks/native'
-import { extendObservable, observable } from 'mobx'
+import { observable } from 'mobx'
 import { useObservable } from '../src/useObservable'
 
 function testWrapper(initializer) {
@@ -12,7 +12,7 @@ function testWrapper(initializer) {
   return [state, values]
 }
 
-test('be reactive to normal props', async () => {
+test('useObservable: be reactive to normal props', async () => {
   const { result } = renderHook(() => testWrapper(() => {
     return { prop: 1 }
   }))
@@ -32,9 +32,9 @@ test('be reactive to normal props', async () => {
 
 })
 
-test('be reactive to computed props', async () => {
+test('useObservable: be reactive to computed props', async () => {
   const { result } = renderHook(() => testWrapper(() => {
-    return { 
+    return {
       prop: 1,
       get computedProp() {
         return this.prop + 1
@@ -57,9 +57,9 @@ test('be reactive to computed props', async () => {
 
 })
 
-test('be reactive to actions', async () => {
+test('useObservable: be reactive to actions', async () => {
   const { result } = renderHook(() => testWrapper(() => {
-    return { 
+    return {
       prop: 1,
       action() {
         this.prop += 1
@@ -82,11 +82,11 @@ test('be reactive to actions', async () => {
 
 })
 
-test('be reactive to external observable', async () => {
+test('useObservable: be reactive to external observable', async () => {
 
   let external = observable({ val: 1 })
   const { result } = renderHook(() => testWrapper(() => {
-    return { 
+    return {
       get prop() {
         return external.val
       },

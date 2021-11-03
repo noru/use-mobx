@@ -1,5 +1,10 @@
 import { AnnotationsMap } from 'mobx';
 declare type Store = Record<string, any>;
-declare type Initializer = () => Store;
-export declare function useObservable(initializer: Initializer, annotations?: AnnotationsMap<Store, never>): Store;
+/**
+ *
+ * @param {() => Observable} initializer
+ * @param {AnnotationsMap<T, never>)} annotations
+ * @returns {Observable} store
+ */
+export declare function useObservable<T extends Store>(initializer: () => T, annotations?: AnnotationsMap<T, never>): T;
 export {};
