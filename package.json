@@ -1,8 +1,8 @@
 {
   "name": "use-mobx",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "Using mobx observable with react hooks",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "test": "jest"

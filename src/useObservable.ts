@@ -7,23 +7,25 @@ type Initializer = () => Store
 
 export function useObservable(initializer: Initializer, annotations?: AnnotationsMap<Store, never>) {
 
-  let ref = useRef(observable(initializer(), annotations, { autoBind: true }))
+  let [store, keys] = useState(() => {
+    let obj = initializer()
+    let keys = Object.keys(obj)
+    return [observable(obj, annotations, { autoBind: true }), keys]
+  })[0]
 
   let initialized = useRef(false)
-  let [dummy, setDummy] = useState(0)
+  let [, forceUpdate] = useState(0)
 
   useEffect(() => {
     autorun(() => {
+      // simply visit all props to keep reactive
+      keys.forEach(key => store[key])
       if (!initialized.current) {
-        console.info('init observer');
-        Object.keys(ref.current).forEach(key => ref.current[key])
         initialized.current = true
       } else {
-        setDummy(i => ++i)
-        console.info('called');
+        forceUpdate(i => ++i)
       }
     })
   }, [])
-  console.info('render ' + dummy);
-  return ref.current
+  return store
 }
