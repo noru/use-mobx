@@ -2,6 +2,12 @@
   "name": "use-mobx-observable",
   "version": "0.0.5",
   "description": "Using mobx observable with react hooks",
+  "keywords": [
+    "mobx",
+    "react",
+    "hooks",
+    "observable"
+  ],
   "main": "dist/index.js",
   "homepage": "https://github.com/noru/use-mobx#readme",
   "repository": {
