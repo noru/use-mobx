@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useObservable } from '../src/useObservable'
 
 function testWrapper(initializer) {
-  let keys = Object.keys(initializer())
+  let keys = Object.keys(typeof initializer === 'function' ? initializer() : initializer)
   let state = useObservable(initializer)
   let values = keys.reduce((res, key) => {
     res[key] = state[key]
@@ -109,6 +109,25 @@ test('useObservable: be reactive to external observable', async () => {
 
 })
 
+test('useObservable: supports plain object', async () => {
+  const { result } = renderHook(() => testWrapper({ prop: 1 }))
+
+  let [store, values] = result.current
+  expect(store.prop).toBe(1)
+  expect(values.prop).toBe(1)
+  act(() => {
+    store.prop++
+  })
+  expect(store.prop).toBe(2)
+  expect(values.prop).toBe(1)
+
+  let [store2, newValues] = result.current
+  expect(store).toBe(store2)
+  expect(newValues.prop).toBe(2)
+
+})
+
+
 test('useObservable: update when dependency', async () => {
 
   let external = observable({ val: 1 })
@@ -122,6 +141,33 @@ test('useObservable: update when dependency', async () => {
         get a() {
           return store.val
         }
+      }
+    }, [store])
+    return { store: local, setDep: setStore }
+  }
+  const { result } = renderHook(() => testWrapper())
+
+  let { store, setDep } = result.current
+  expect(store.a).toBe(1)
+  act(() => {
+    setDep(external2)
+  })
+  store = result.current.store
+  expect(store.a).toBe(2)
+
+})
+
+test('useObservable: plain object, update when dependency', async () => {
+
+  let external = observable({ val: 1 })
+  let external2 = observable({ val: 2 })
+
+  function testWrapper() {
+    let [store, setStore] = useState(external)
+
+    let local = useObservable({
+      get a() {
+        return store.val
       }
     }, [store])
     return { store: local, setDep: setStore }
