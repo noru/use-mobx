@@ -52,7 +52,7 @@ However, in practice, you'll still need to create an observable for `computed` a
 # Do it at once
 
 ```jsx
-import { useObservable } from 'use-mobx-observable'
+import { useObservable, mapProps } from 'use-mobx-observable'
 
 function MyComponent() {
 
@@ -64,7 +64,9 @@ function MyComponent() {
       },
       add() {
         this.count += 1
-      }
+      },
+      // use helper to map getters from other observables
+      ...mapProps(externalStore, ['prop1', 'prop2']),
     }
   })
 
