@@ -123,12 +123,12 @@ test('useObservable: update when dependency', async () => {
           return store.val
         }
       }
-    }, undefined, [store])
+    }, [store])
     return { store: local, setDep: setStore }
   }
   const { result } = renderHook(() => testWrapper())
 
-  let {store, setDep} = result.current
+  let { store, setDep } = result.current
   expect(store.a).toBe(1)
   act(() => {
     setDep(external2)
