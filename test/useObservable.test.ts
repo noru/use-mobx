@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react-hooks/native'
 import { observable } from 'mobx'
+import { useState } from 'react'
 import { useObservable } from '../src/useObservable'
 
 function testWrapper(initializer) {
@@ -108,3 +109,31 @@ test('useObservable: be reactive to external observable', async () => {
 
 })
 
+test('useObservable: update when dependency', async () => {
+
+  let external = observable({ val: 1 })
+  let external2 = observable({ val: 2 })
+
+  function testWrapper() {
+    let [store, setStore] = useState(external)
+
+    let local = useObservable(() => {
+      return {
+        get a() {
+          return store.val
+        }
+      }
+    }, undefined, [store])
+    return { store: local, setDep: setStore }
+  }
+  const { result } = renderHook(() => testWrapper())
+
+  let {store, setDep} = result.current
+  expect(store.a).toBe(1)
+  act(() => {
+    setDep(external2)
+  })
+  store = result.current.store
+  expect(store.a).toBe(2)
+
+})

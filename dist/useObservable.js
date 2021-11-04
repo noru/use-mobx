@@ -1,24 +1,27 @@
 import { autorun, observable } from 'mobx';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 /**
  *
  * @param {() => Observable} initializer
  * @param {AnnotationsMap<T, never>)} annotations
  * @returns {Observable} store
  */
-export function useObservable(initializer, annotations) {
-    let { store, keys } = useState(() => {
+export function useObservable(initializer, annotations, deps = []) {
+    let initialized = useRef(false);
+    let _initializer = useCallback(() => {
+        initialized.current = false;
         let obj = initializer();
         let keys = Object.keys(obj);
         return {
             store: observable(obj, annotations, { autoBind: true }),
             keys,
         };
-    })[0];
-    let initialized = useRef(false);
+    }, deps);
+    let [{ store, keys }, setState] = useState(_initializer);
     let [, forceUpdate] = useState(0);
+    useEffect(() => setState(_initializer()), deps);
     useEffect(() => {
-        autorun(() => {
+        let disposer = autorun(() => {
             // simply visit all props to keep reactive
             keys.forEach(key => store[key]);
             if (!initialized.current) {
@@ -28,6 +31,7 @@ export function useObservable(initializer, annotations) {
                 forceUpdate(i => ++i);
             }
         });
-    }, []);
+        return disposer;
+    }, [keys, store]);
     return store;
 }

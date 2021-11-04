@@ -1,5 +1,5 @@
 import { autorun, observable, AnnotationsMap } from 'mobx'
-import { useEffect, useRef, useState } from 'react'
+import { DependencyList, useCallback, useEffect, useRef, useState } from 'react'
 
 type Store = Record<string, any>
 
@@ -9,22 +9,26 @@ type Store = Record<string, any>
  * @param {AnnotationsMap<T, never>)} annotations 
  * @returns {Observable} store
  */
-export function useObservable<T extends Store>(initializer: () => T, annotations?: AnnotationsMap<T, never>): T {
+export function useObservable<T extends Store>(initializer: () => T, annotations?: AnnotationsMap<T, never>, deps: DependencyList = []): T {
 
-  let { store, keys } = useState(() => {
+  let initialized = useRef(false)
+
+  let _initializer = useCallback(() => {
+    initialized.current = false
     let obj = initializer()
     let keys = Object.keys(obj)
     return {
       store: observable(obj, annotations, { autoBind: true }),
       keys,
     }
-  })[0]
+  }, deps)
 
-  let initialized = useRef(false)
+  let [{ store, keys }, setState] = useState(_initializer)
   let [, forceUpdate] = useState(0)
 
+  useEffect(() => setState(_initializer()), deps)
   useEffect(() => {
-    autorun(() => {
+    let disposer = autorun(() => {
       // simply visit all props to keep reactive
       keys.forEach(key => store[key])
       if (!initialized.current) {
@@ -33,6 +37,9 @@ export function useObservable<T extends Store>(initializer: () => T, annotations
         forceUpdate(i => ++i)
       }
     })
-  }, [])
+    return disposer
+  }, [keys, store])
+
+
   return store
 }
