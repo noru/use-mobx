@@ -2,15 +2,16 @@ import { autorun, observable } from 'mobx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 /**
  *
- * @param {() => Observable} initializer
- * @param {AnnotationsMap<T, never>)} annotations
+ * @param {T | () => Observable} initializer Observable initializer
+ * @param {Array} deps Dependency list of initializer. When changed, a new observable will be created
+ * @param {AnnotationsMap<T, never>)} annotations MobX annotations. See https://mobx.js.org/observable-state.html#available-annotations
  * @returns {Observable} store
  */
-export function useObservable(initializer, annotations, deps = []) {
+export function useObservable(initializer, deps = [], annotations) {
     let initialized = useRef(false);
     let _initializer = useCallback(() => {
         initialized.current = false;
-        let obj = initializer();
+        let obj = typeof initializer === 'function' ? initializer() : initializer;
         let keys = Object.keys(obj);
         return {
             store: observable(obj, annotations, { autoBind: true }),

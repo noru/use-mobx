@@ -1,7 +1,7 @@
 import { autorun, observable, AnnotationsMap } from 'mobx'
 import { DependencyList, useCallback, useEffect, useRef, useState } from 'react'
 
-type Store = Record<string, any>
+export type Store = Record<string, any>
 
 /**
  * 

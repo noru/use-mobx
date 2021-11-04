@@ -23,3 +23,14 @@ export function mapProps(store, map, toExtend = {}) {
     });
     return res;
 }
+export function select(store, map) {
+    if (!isValidMap(map)) {
+        console.error('[use-mobx] mapProps: mapping must be either an Array or an Object');
+    }
+    return (res = {}) => {
+        normalizeMap(map).forEach(({ key, val }) => {
+            Object.defineProperty(res, key, { get: () => store[val], enumerable: true });
+        });
+        return res;
+    };
+}

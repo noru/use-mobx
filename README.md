@@ -1,6 +1,6 @@
 # use-mobx-observable
 
-* EARLY VERSION, NOT STABLE
+- EARLY VERSION, NOT STABLE
 
 Use mobx observable like `useState`
 
@@ -28,26 +28,27 @@ function MyComponent() {
     }                               // <---
     </Observer>                     // <---
   )
-} 
+}
 ```
+
 To be reactive, you have to wrap your jsx with `<Observer>` and use render props, which is not a favorable way.
 
 There was a [Discussion](https://github.com/mobxjs/mobx/discussions/2566) around this issue. At the end of it, simple solution was proposed:
 
 ```jsx
 function useSelector(select) {
-  const [selected, setSelected] = useState(select)	  
+  const [selected, setSelected] = useState(select)
   useEffect(() => autorun(() => setSelected(select())), [])
-  return selected;
+  return selected
 }
 
-function myComponent({observableOrder}) {
+function myComponent({ observableOrder }) {
   const latestPrice = useSelector(() => observableOrder.price)
   return <h1>{latestPrice}</h1>
 }
 ```
 
-However, in practice, you'll still need to create an observable for `computed` and `actions`. 
+However, in practice, you'll still need to create an observable for `computed` and `actions`.
 
 # Do it at once
 
@@ -56,8 +57,8 @@ import { useObservable, mapProps } from 'use-mobx-observable'
 
 function MyComponent() {
 
-  let store = useObservable(() => {
-    return {
+  // create local observable, with plain object or an initializer
+  let store = useObservable({
       count: 0,
       get countText() {
         return `Count: ${this.count}`
@@ -65,8 +66,22 @@ function MyComponent() {
       add() {
         this.count += 1
       },
-    }
-  })
+    })
+
+  // map external observable props to getters
+  let store2 = useObservable(select(externalStore, ['propsA', 'propsB'])({ count: 0 }/* Optional */))
+
+  // chaining with lodash.flow for mapping multiple sources
+  let store3 = useObserable(
+    _.flow(
+      select(externalStore, ['propsA', 'propsB'],
+      select(externalStore2, { renameC: 'propsC' },  // rename getters
+    )({
+      get sum() {
+        return this.propsA + this.renameC
+      }
+     })
+  )
 
   return (
     <div>
@@ -77,4 +92,3 @@ function MyComponent() {
 }
 
 ```
-

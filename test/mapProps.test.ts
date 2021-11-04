@@ -1,5 +1,6 @@
 import { observable } from 'mobx'
-import { mapProps } from '../src/mapProps'
+import { mapProps, select } from '../src/mapProps'
+import flow from 'lodash.flow'
 
 const getSource = () => observable({
   a: 1,
@@ -64,5 +65,41 @@ test('mapProps: extends object', async () => {
 
   expect(res.d).toBe(sym)
   expect(Object.keys(res)).toEqual(['d', 'a'])
+
+})
+
+test('select: extends object', () => {
+
+  let source = getSource()
+  let res = select(source, { aa: 'a', bb: 'b' })
+
+  expect(res()).toEqual({ aa: 1, bb: 2 })
+  expect(res({ c: 3 })).toEqual({ aa: 1, bb: 2, c: 3 })
+
+})
+
+test('select: extends object, with array', () => {
+
+  let source = getSource()
+  let res = select(source, ['a', 'b'])
+
+  expect(res()).toEqual({ a: 1, b: 2 })
+  expect(res({ c: 3 })).toEqual({ a: 1, b: 2, c: 3 })
+
+})
+
+test('select: composed', () => {
+
+  let source = getSource()
+  let res1 = select(source, { aa: 'a', bb: 'b' })()
+  let res2 = select(source, ['b'])(res1)
+  expect(res2).toEqual({ aa: 1, bb: 2, b: 2 })
+
+  let composed = flow(
+    select(source, { aa: 'a', bb: 'b' }),
+    select(source, ['b'])
+  )
+  expect(composed()).toEqual({ aa: 1, bb: 2, b: 2 })
+  expect(composed({ c: 5 })).toEqual({ aa: 1, bb: 2, b: 2, c: 5 })
 
 })
