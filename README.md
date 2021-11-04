@@ -65,8 +65,6 @@ function MyComponent() {
       add() {
         this.count += 1
       },
-      // use helper to map getters from other observables
-      ...mapProps(externalStore, ['prop1', 'prop2']),
     }
   })
 

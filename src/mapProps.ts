@@ -29,16 +29,16 @@ type ObjectMappingResult<T, P extends ObjectMapping<T>> = { [key in keyof P]: T[
  * @param {Object|Array} getters
  * @return {Object}
  */
-export function mapProps<T>(store: T, map: ArrayMapping<T>): ArrayMappingResult<T>;
-export function mapProps<T, P extends ObjectMapping<T>>(store: T, map: P): ObjectMappingResult<T, P>;
-export function mapProps<T>(store: T, map: any): any {
-  let res = {} as any
+export function mapProps<T, Q = {}>(store: T, map: ArrayMapping<T>, toExtend?: Q): ArrayMappingResult<T> & Q;
+export function mapProps<T, P extends ObjectMapping<T>, Q = {}>(store: T, map: P, toExtend?: Q): ObjectMappingResult<T, P> & Q;
+export function mapProps<T>(store: T, map: any, toExtend: any = {}): any {
+  let res = toExtend
   if (!isValidMap(map)) {
     console.error('[use-mobx] mapProps: mapping must be either an Array or an Object')
   }
 
   normalizeMap(map).forEach(({ key, val }) => {
-    Object.defineProperty(res, key, { get: () => store[val] })
+    Object.defineProperty(res, key, { get: () => store[val], enumerable: true })
   })
 
   return res

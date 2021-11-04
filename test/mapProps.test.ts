@@ -47,3 +47,22 @@ test('mapProps: map props as object', async () => {
   res.cc()
   expect(res.aa).toBe(2)
 })
+
+test('mapProps: map props are enumerable', async () => {
+
+  let source = getSource()
+  let res = mapProps(source, ['a', 'b', 'c'])
+  expect(Object.keys({ ...res })).toEqual(['a', 'b', 'c'])
+
+})
+
+test('mapProps: extends object', async () => {
+
+  let sym = Symbol()
+  let source = getSource()
+  let res = mapProps(source, ['a'], { d: sym })
+
+  expect(res.d).toBe(sym)
+  expect(Object.keys(res)).toEqual(['d', 'a'])
+
+})

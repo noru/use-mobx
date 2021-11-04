@@ -12,6 +12,6 @@ declare type ObjectMappingResult<T, P extends ObjectMapping<T>> = {
  * @param {Object|Array} getters
  * @return {Object}
  */
-export declare function mapProps<T>(store: T, map: ArrayMapping<T>): ArrayMappingResult<T>;
-export declare function mapProps<T, P extends ObjectMapping<T>>(store: T, map: P): ObjectMappingResult<T, P>;
+export declare function mapProps<T, Q = {}>(store: T, map: ArrayMapping<T>, toExtend?: Q): ArrayMappingResult<T> & Q;
+export declare function mapProps<T, P extends ObjectMapping<T>, Q = {}>(store: T, map: P, toExtend?: Q): ObjectMappingResult<T, P> & Q;
 export {};
