@@ -71,10 +71,11 @@ test('mapProps: extends object', async () => {
 test('select: extends object', () => {
 
   let source = getSource()
-  let res = select(source, { aa: 'a', bb: 'b' })
+  let res = select(source, { aa: 'a', bb: 'b'})
 
   expect(res()).toEqual({ aa: 1, bb: 2 })
-  expect(res({ c: 3 })).toEqual({ aa: 1, bb: 2, c: 3 })
+  function e() {}
+  expect(res({ c: 3, get d() { return this.aa }, e, f: [] })).toEqual({ aa: 1, bb: 2, c: 3, d: 1, e, f: [] })
 
 })
 
