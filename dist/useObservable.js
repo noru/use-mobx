@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  */
 export function useObservable(initializer, deps = [], annotations) {
     let initialized = useRef(false);
+    let depsRef = useRef(false);
     let _initializer = useCallback(() => {
         initialized.current = false;
         let obj = typeof initializer === 'function' ? initializer() : initializer;
@@ -20,7 +21,14 @@ export function useObservable(initializer, deps = [], annotations) {
     }, deps);
     let [{ store, keys }, setState] = useState(_initializer);
     let [, forceUpdate] = useState(0);
-    useEffect(() => setState(_initializer()), deps);
+    useEffect(() => {
+        if (depsRef.current) {
+            setState(_initializer());
+        }
+        else {
+            depsRef.current = true; // temp: skip first time run, optimize later
+        }
+    }, deps);
     useEffect(() => {
         let disposer = autorun(() => {
             // simply visit all props to keep reactive

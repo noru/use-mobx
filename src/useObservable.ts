@@ -17,6 +17,7 @@ export function useObservable<T extends Store>(
 ): T {
 
   let initialized = useRef(false)
+  let depsRef = useRef(false)
 
   let _initializer = useCallback(() => {
     initialized.current = false
@@ -31,7 +32,13 @@ export function useObservable<T extends Store>(
   let [{ store, keys }, setState] = useState(_initializer)
   let [, forceUpdate] = useState(0)
 
-  useEffect(() => setState(_initializer()), deps)
+  useEffect(() => {
+    if (depsRef.current) {
+      setState(_initializer())
+    } else {
+      depsRef.current = true // temp: skip first time run, optimize later
+    }
+  }, deps)
   useEffect(() => {
     let disposer = autorun(() => {
       // simply visit all props to keep reactive
