@@ -31,32 +31,11 @@ type ObjectMappingResult<T, P extends ObjectMapping<T>> = { [key in keyof P]: T[
  * @param {Object|Array} getters
  * @return {Object}
  */
-export function mapProps<T, Q = {}>(store: T, map: ArrayMapping<T>, toExtend?: Q): ArrayMappingResult<T> & Q;
-export function mapProps<T, P extends ObjectMapping<T>, Q = {}>(store: T, map: P, toExtend?: Q): ObjectMappingResult<T, P> & Q;
-export function mapProps<T>(store: T, map: any, toExtend: any = {}): any {
-  let res = toExtend
-  if (!isValidMap(map)) {
-    console.error('[use-mobx] mapProps: mapping must be either an Array or an Object')
-  }
-
-  normalizeMap(map).forEach(({ key, val }) => {
-    Object.defineProperty(res, key, { get: () => store[val], enumerable: true })
-  })
-
-  return res
-}
-
-/**
- * Reduce the code which written in initializer for mapping props
- * @param {Observable} observable
- * @param {Object|Array} getters
- * @return {Object}
- */
 export function select<T>(store: T, map: ArrayMapping<T>): <Q extends Store = {}>(obj?: Q) => ArrayMappingResult<T> & Q;
 export function select<T, P extends ObjectMapping<T>>(store: T, map: P): <Q extends Store = {}>(obj?: Q) => ObjectMappingResult<T, P> & Q;
 export function select<T>(store: T, map: any): any {
   if (!isValidMap(map)) {
-    console.error('[use-mobx] mapProps: mapping must be either an Array or an Object')
+    console.error('[use-mobx] select: mapping must be either an Array or an Object')
   }
   return (res = {}) => {
     normalizeMap(map).forEach(({ key, val }) => {

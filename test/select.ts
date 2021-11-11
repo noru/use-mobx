@@ -1,5 +1,5 @@
 import { observable, configure } from 'mobx'
-import { mapProps, select } from '../src/mapProps'
+import { select } from '../src/mapProps'
 import flow from 'lodash.flow'
 
 configure({
@@ -15,62 +15,6 @@ const getSource = () => observable({
     this.a += 1
   }
 }, undefined, { autoBind: true })
-
-test('mapProps: map props as array', async () => {
-
-  let source = getSource()
-  let res = mapProps(source, ['a', 'b', 'c'])
-
-  // @ts-expect-error : props not in source
-  let res2 = mapProps(source, ['non-exist'])
-
-  expect(res.a).toBe(1)
-  expect(res.b).toBe(2)
-  res.c()
-  expect(res.a).toBe(2)
-})
-
-test('mapProps: map props as object', async () => {
-
-  let source = getSource()
-  let res = mapProps(source, {
-    aa: 'a',
-    bb: 'b',
-    cc: 'c',
-  })
-
-  // @ts-expect-error : props not in source
-  let res2 = mapProps(source, {
-    aa: 'non-exist-prop',
-  })
-
-  // @ts-expect-error : props not in map
-  res.nonexist
-
-  expect(res.aa).toBe(1)
-  expect(res.bb).toBe(2)
-  res.cc()
-  expect(res.aa).toBe(2)
-})
-
-test('mapProps: map props are enumerable', async () => {
-
-  let source = getSource()
-  let res = mapProps(source, ['a', 'b', 'c'])
-  expect(Object.keys({ ...res })).toEqual(['a', 'b', 'c'])
-
-})
-
-test('mapProps: extends object', async () => {
-
-  let sym = Symbol()
-  let source = getSource()
-  let res = mapProps(source, ['a'], { d: sym })
-
-  expect(res.d).toBe(sym)
-  expect(Object.keys(res)).toEqual(['d', 'a'])
-
-})
 
 test('select: extends object', () => {
 
@@ -106,5 +50,23 @@ test('select: composed', () => {
   )
   expect(composed()).toEqual({ aa: 1, bb: 2, b: 2 })
   expect(composed({ c: 5 })).toEqual({ aa: 1, bb: 2, b: 2, c: 5 })
+
+})
+
+test('select: array, typings', () => {
+
+  let source = getSource()
+  let res = select(source, ['a', 'b'])({ d: 1 })
+  // @ts-expect-error : props not in map
+  res.nonexist
+  // @ts-expect-error : props not in source
+  let res2 = select(source, ['a', 'b', 'd'])({ d: 1 })
+
+  res2.d // ok
+
+  // @ts-expect-error: prop in source but not mapped
+  res2.c 
+
+
 
 })
