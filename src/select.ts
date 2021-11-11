@@ -24,7 +24,6 @@ type ArrayMappingResult<T> = { [key in keyof T]: T[key] }
 type ObjectMapping<T> = Record<string, keyof T>
 type ObjectMappingResult<T, P extends ObjectMapping<T>> = { [key in keyof P]: T[P[key]] }
 
-
 /**
  * Reduce the code which written in initializer for mapping props
  * @param {Observable} observable

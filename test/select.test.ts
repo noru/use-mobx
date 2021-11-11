@@ -1,5 +1,5 @@
 import { observable, configure } from 'mobx'
-import { select } from '../src/mapProps'
+import { select } from '../src/select'
 import flow from 'lodash.flow'
 
 configure({
@@ -64,9 +64,25 @@ test('select: array, typings', () => {
 
   res2.d // ok
 
-  // @ts-expect-error: prop in source but not mapped
-  res2.c 
+  // @@@@ts-expect-error: prop in source but not mapped
+  res.c // TODO, how to add boundary for this case?
 
+})
 
+test('select: object, typings', () => {
 
+  let source = getSource()
+  let res = select(source, { a: 'a', bb: 'b'})({ d: 1 })
+  // @ts-expect-error : props not in map
+  res.nonexist
+  // @ts-expect-error : props not in map
+  res.b
+  // @ts-expect-error : props not in map
+  res.c
+  res.d
+  res.a
+  res.bb
+
+  // @ts-expect-error : props not in source
+  let res2 = select(source, { a: 'nonexist' })({ d: 1 })
 })

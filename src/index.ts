@@ -1,2 +1,2 @@
 export { useObservable } from './useObservable'
-export { mapProps, select } from './mapProps'
+export { select } from './select'
