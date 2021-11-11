@@ -1,6 +1,10 @@
-import { observable } from 'mobx'
+import { observable, configure } from 'mobx'
 import { mapProps, select } from '../src/mapProps'
 import flow from 'lodash.flow'
+
+configure({
+  enforceActions: 'never'
+})
 
 const getSource = () => observable({
   a: 1,

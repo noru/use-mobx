@@ -1,7 +1,11 @@
 import { renderHook, act } from '@testing-library/react-hooks/native'
-import { observable } from 'mobx'
+import { configure, observable } from 'mobx'
 import { useState } from 'react'
 import { useObservable } from '../src/useObservable'
+
+configure({
+  enforceActions: 'never'
+})
 
 function testWrapper(initializer) {
   let keys = Object.keys(typeof initializer === 'function' ? initializer() : initializer)
