@@ -1,4 +1,4 @@
-import { autorun, observable, AnnotationsMap } from 'mobx'
+import { autorun, observable, AnnotationsMap, isObservable } from 'mobx'
 import { DependencyList, useCallback, useEffect, useRef, useState } from 'react'
 
 export type Store = Record<string, any>
@@ -22,9 +22,9 @@ export function useObservable<T extends Store>(
   let _initializer = useCallback(() => {
     initialized.current = false
     let obj = typeof initializer === 'function' ? initializer() : initializer
-    let keys = Object.keys(obj)
+    let keys = Object.getOwnPropertyNames(obj)
     return {
-      store: observable(obj, annotations, { autoBind: true }),
+      store: isObservable(obj) ? obj : observable(obj, annotations, { autoBind: true }),
       keys,
     }
   }, deps)
@@ -51,7 +51,5 @@ export function useObservable<T extends Store>(
     })
     return disposer
   }, [keys, store])
-
-
   return store
 }

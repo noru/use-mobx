@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks/native'
-import { configure, observable } from 'mobx'
+import { configure, isObservable, observable, observe } from 'mobx'
 import { useState } from 'react'
 import { useObservable } from '../src/useObservable'
 
@@ -121,6 +121,29 @@ test('useObservable: supports plain object', async () => {
   expect(values.prop).toBe(1)
   act(() => {
     store.prop++
+  })
+  expect(store.prop).toBe(2)
+  expect(values.prop).toBe(1)
+
+  let [store2, newValues] = result.current
+  expect(store).toBe(store2)
+  expect(newValues.prop).toBe(2)
+
+})
+
+test('useObservable: supports observable', async () => {
+
+  let obser = observable({ prop: 1 }, undefined, { autoBind: true })
+
+  const { result } = renderHook(() => testWrapper(obser))
+
+  let [store, values] = result.current
+
+  expect(obser).toBe(store)
+  expect(store.prop).toBe(1)
+  expect(values.prop).toBe(1)
+  act(() => {
+    obser.prop++
   })
   expect(store.prop).toBe(2)
   expect(values.prop).toBe(1)

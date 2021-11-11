@@ -1,4 +1,4 @@
-import { autorun, observable } from 'mobx';
+import { autorun, observable, isObservable } from 'mobx';
 import { useCallback, useEffect, useRef, useState } from 'react';
 /**
  *
@@ -13,9 +13,9 @@ export function useObservable(initializer, deps = [], annotations) {
     let _initializer = useCallback(() => {
         initialized.current = false;
         let obj = typeof initializer === 'function' ? initializer() : initializer;
-        let keys = Object.keys(obj);
+        let keys = Object.getOwnPropertyNames(obj);
         return {
-            store: observable(obj, annotations, { autoBind: true }),
+            store: isObservable(obj) ? obj : observable(obj, annotations, { autoBind: true }),
             keys,
         };
     }, deps);

@@ -53,7 +53,7 @@ However, in practice, you'll still need to create an observable for `computed` a
 # Do it at once
 
 ```jsx
-import { useObservable, mapProps } from 'use-mobx-observable'
+import { useObservable, select, useMultiObservables } from 'use-mobx-observable'
 
 function MyComponent() {
 
@@ -72,7 +72,7 @@ function MyComponent() {
   let store2 = useObservable(select(externalStore, ['propsA', 'propsB'])({ count: 0 }/* Optional */))
 
   // chaining with lodash.flow for mapping multiple sources
-  let store3 = useObserable(
+  let store3 = useObservable(
     _.flow(
       select(externalStore, ['propsA', 'propsB'],
       select(externalStore2, { renameC: 'propsC' },  // rename getters
@@ -82,6 +82,13 @@ function MyComponent() {
       }
      })
   )
+
+  // use observable directly, returned value can be omitted since it is the same as input
+  // Be ware of the performance impact: any props change will trigger a rerender.
+  useObservable(store)
+
+  // or, a helper for multiple stores
+  useMultiObservables(store, store2, store3)
 
   return (
     <div>
