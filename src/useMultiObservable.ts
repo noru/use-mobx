@@ -1,5 +1,9 @@
-import { autorun, observable, AnnotationsMap, isObservable } from 'mobx'
-import { DependencyList, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  autorun, isObservable,
+} from 'mobx'
+import {
+  useCallback, useEffect, useRef, useState,
+} from 'react'
 import { Store } from './useObservable'
 
 export function useMultiObservable<T extends Store>(...stores: T[]): void {

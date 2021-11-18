@@ -1,10 +1,14 @@
-import { autorun, observable, AnnotationsMap, isObservable } from 'mobx'
-import { DependencyList, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  autorun, observable, AnnotationsMap, isObservable,
+} from 'mobx'
+import {
+  DependencyList, useCallback, useEffect, useRef, useState,
+} from 'react'
 
 export type Store = Record<string, any>
 
 /**
- * 
+ *
  * @param {T | () => Observable} initializer Observable initializer
  * @param {Array} deps Dependency list of initializer. When changed, a new observable will be created
  * @param {AnnotationsMap<T, never>)} annotations MobX annotations. See https://mobx.js.org/observable-state.html#available-annotations

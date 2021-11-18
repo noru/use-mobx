@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useObservable } from '../src/useObservable'
 
 configure({
-  enforceActions: 'never'
+  enforceActions: 'never',
 })
 
 function testWrapper(initializer) {
@@ -22,7 +22,7 @@ describe('useObservable', () => {
     const { result } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
     }))
-  
+
     let [store, values] = result.current
     expect(store.prop).toBe(1)
     expect(values.prop).toBe(1)
@@ -31,23 +31,23 @@ describe('useObservable', () => {
     })
     expect(store.prop).toBe(2)
     expect(values.prop).toBe(1)
-  
+
     let [store2, newValues] = result.current
     expect(store).toBe(store2)
     expect(newValues.prop).toBe(2)
-  
+
   })
-  
+
   test('be reactive to computed props', async () => {
     const { result } = renderHook(() => testWrapper(() => {
       return {
         prop: 1,
         get computedProp() {
           return this.prop + 1
-        }
+        },
       }
     }))
-  
+
     let [store, values] = result.current
     expect(store.computedProp).toBe(2)
     expect(values.computedProp).toBe(2)
@@ -56,20 +56,20 @@ describe('useObservable', () => {
     })
     expect(store.computedProp).toBe(3)
     expect(values.computedProp).toBe(2)
-  
+
     let [store2, newValues] = result.current
     expect(store).toBe(store2)
     expect(newValues.computedProp).toBe(3)
-  
+
   })
-  
+
   test('be reactive to actions', async () => {
     const { result } = renderHook(() => testWrapper(() => {
       return {
         prop: 1,
         action() {
           this.prop += 1
-        }
+        },
       }
     }))
 
@@ -81,11 +81,11 @@ describe('useObservable', () => {
     })
     expect(store.prop).toBe(2)
     expect(values.prop).toBe(1)
-  
+
     let [store2, newValues] = result.current
     expect(store).toBe(store2)
     expect(newValues.prop).toBe(2)
-  
+
   })
 
   test('be reactive to external observable', async () => {
@@ -131,7 +131,7 @@ describe('useObservable', () => {
     expect(newValues.prop).toBe(2)
 
   })
-  
+
   test('supports observable', async () => {
 
     let obser = observable({ prop: 1 }, undefined, { autoBind: true })
@@ -148,27 +148,27 @@ describe('useObservable', () => {
     })
     expect(store.prop).toBe(2)
     expect(values.prop).toBe(1)
-  
+
     let [store2, newValues] = result.current
     expect(store).toBe(store2)
     expect(newValues.prop).toBe(2)
-  
+
   })
 
 
   test('update when dependency', async () => {
-  
+
     let external = observable({ val: 1 })
     let external2 = observable({ val: 2 })
-  
+
     function testWrapper() {
       let [store, setStore] = useState(external)
-  
+
       let local = useObservable(() => {
         return {
           get a() {
             return store.val
-          }
+          },
         }
       }, [store])
       return { store: local, setDep: setStore }
@@ -182,26 +182,26 @@ describe('useObservable', () => {
     })
     store = result.current.store
     expect(store.a).toBe(2)
-  
+
   })
 
   test('plain object, update when dependency', async () => {
-  
+
     let external = observable({ val: 1 })
     let external2 = observable({ val: 2 })
-  
+
     function testWrapper() {
       let [store, setStore] = useState(external)
-  
+
       let local = useObservable({
         get a() {
           return store.val
-        }
+        },
       }, [store])
       return { store: local, setDep: setStore }
     }
     const { result } = renderHook(() => testWrapper())
-  
+
     let { store, setDep } = result.current
     expect(store.a).toBe(1)
     act(() => {

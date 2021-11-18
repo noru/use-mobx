@@ -1,4 +1,4 @@
-import { Store } from "./useObservable"
+import { Store } from './useObservable'
 
 function isObject(obj) {
   let type = typeof obj
