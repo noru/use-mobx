@@ -9,7 +9,7 @@ configure({
 
 describe('useAutorun', () => {
 
-  test('executor run immediately', async () => {
+  test('effect run immediately', async () => {
 
     let obs = observable({ a: 1 })
     let marker = 0
@@ -21,7 +21,7 @@ describe('useAutorun', () => {
     expect(marker).toBe(1)
   })
 
-  test('executor autorun by changes', async () => {
+  test('effect autorun by changes', async () => {
 
     let obs = observable({ a: 1 })
     let marker = 0
