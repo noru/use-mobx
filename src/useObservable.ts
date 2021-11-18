@@ -1,10 +1,12 @@
 import {
-  autorun, observable, AnnotationsMap, isObservable,
+  observable, AnnotationsMap, isObservable,
 } from 'mobx'
 import {
   DependencyList, useCallback, useEffect, useRef, useState,
 } from 'react'
+import { useAutorun } from './useAutorun'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Store = Record<string, any>
 
 /**
@@ -21,7 +23,6 @@ export function useObservable<T extends Store>(
 ): T {
 
   let initialized = useRef(false)
-  let depsRef = useRef(false)
 
   let _initializer = useCallback(() => {
     initialized.current = false
@@ -36,24 +37,28 @@ export function useObservable<T extends Store>(
   let [{ store, keys }, setState] = useState(_initializer)
   let [, forceUpdate] = useState(0)
 
-  useEffect(() => {
-    if (depsRef.current) {
-      setState(_initializer())
+  useUpdateEffect(() => setState(_initializer()), [_initializer])
+
+  useAutorun(() => {
+    // simply visit all props to keep reactive
+    keys.forEach(key => store[key])
+    if (!initialized.current) {
+      initialized.current = true
     } else {
-      depsRef.current = true // temp: skip first time run, optimize later
+      forceUpdate(i => ++i)
+    }
+  }, [store])
+  return store
+}
+
+// like: https://github.com/streamich/react-use/blob/master/src/useUpdateEffect.ts
+export const useUpdateEffect: typeof useEffect = (effect, deps) => {
+  let firstTime = useRef(true)
+  useEffect(() => {
+    if (firstTime.current) {
+      firstTime.current = false
+    } else {
+      return effect()
     }
   }, deps)
-  useEffect(() => {
-    let disposer = autorun(() => {
-      // simply visit all props to keep reactive
-      keys.forEach(key => store[key])
-      if (!initialized.current) {
-        initialized.current = true
-      } else {
-        forceUpdate(i => ++i)
-      }
-    })
-    return disposer
-  }, [keys, store])
-  return store
 }

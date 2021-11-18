@@ -2,7 +2,6 @@ import { renderHook, act } from '@testing-library/react-hooks/native'
 import { configure, observable } from 'mobx'
 import { useState } from 'react'
 import { useReaction } from '../src/useReaction'
-import { useWhen } from '../src/useWhen'
 
 configure({
   enforceActions: 'never',

@@ -98,7 +98,7 @@ describe('helper: select', () => {
     res.bb
 
     // @ts-expect-error : props not in source
-    let res2 = select(source, { a: 'nonexist' })({ d: 1 })
+    select(source, { a: 'nonexist' })({ d: 1 })
   })
 })
 

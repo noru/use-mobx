@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable max-len */
 import { Store } from './useObservable'
 
 function isObject(obj) {
@@ -30,8 +32,8 @@ type ObjectMappingResult<T, P extends ObjectMapping<T>> = { [key in keyof P]: T[
  * @param {Object|Array} getters
  * @return {Object}
  */
-export function select<T>(store: T, map: ArrayMapping<T>): <Q extends Store = {}>(obj?: Q) => ArrayMappingResult<T> & Q;
-export function select<T, P extends ObjectMapping<T>>(store: T, map: P): <Q extends Store = {}>(obj?: Q) => ObjectMappingResult<T, P> & Q;
+export function select<T>(store: T, map: ArrayMapping<T>): <Q extends Store = Store>(obj?: Q) => ArrayMappingResult<T> & Q;
+export function select<T, P extends ObjectMapping<T>>(store: T, map: P): <Q extends Store = Store>(obj?: Q) => ObjectMappingResult<T, P> & Q;
 export function select<T>(store: T, map: any): any {
   if (!isValidMap(map)) {
     console.error('[use-mobx] select: mapping must be either an Array or an Object')
