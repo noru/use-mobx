@@ -5,7 +5,7 @@ import {
 import { useAutorun } from './useAutorun'
 import { Store, useUpdateEffect } from './useObservable'
 
-export function useMultiObservable<T extends Store>(...stores: T[]): void {
+export function useMultiObservable<T extends Store>(...stores: T[]): T[] {
   let deps = [...stores]
   stores.forEach((s, i) => {
     if (!isObservable(s)) {
@@ -41,6 +41,8 @@ export function useMultiObservable<T extends Store>(...stores: T[]): void {
       forceUpdate(i => ++i)
     }
   }, deps)
+
+  return stores
 }
 
 

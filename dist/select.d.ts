@@ -1,4 +1,4 @@
-import { Store } from "./useObservable";
+import { Store } from './useObservable';
 declare type ArrayMapping<T> = (keyof T)[];
 declare type ArrayMappingResult<T> = {
     [key in keyof T]: T[key];
@@ -13,6 +13,6 @@ declare type ObjectMappingResult<T, P extends ObjectMapping<T>> = {
  * @param {Object|Array} getters
  * @return {Object}
  */
-export declare function select<T>(store: T, map: ArrayMapping<T>): <Q extends Store = {}>(obj?: Q) => ArrayMappingResult<T> & Q;
-export declare function select<T, P extends ObjectMapping<T>>(store: T, map: P): <Q extends Store = {}>(obj?: Q) => ObjectMappingResult<T, P> & Q;
+export declare function select<T>(store: T, map: ArrayMapping<T>): <Q extends Store = Store>(obj?: Q) => ArrayMappingResult<T> & Q;
+export declare function select<T, P extends ObjectMapping<T>>(store: T, map: P): <Q extends Store = Store>(obj?: Q) => ObjectMappingResult<T, P> & Q;
 export {};

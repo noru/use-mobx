@@ -26,6 +26,7 @@ describe('helper: select', () => {
     expect(res()).toEqual({ aa: 1, bb: 2 })
     function e() { /* empty */ }
     expect(res({
+      // @ts-ignore, todo, how to bind type of this?
       c: 3, get d() { return this.aa }, e, f: [],
     })).toEqual({
       aa: 1, bb: 2, c: 3, d: 1, e, f: [],

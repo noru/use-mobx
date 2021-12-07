@@ -1,6 +1,6 @@
 {
   "name": "use-mobx-observable",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Using mobx observable with react hooks",
   "keywords": [
     "mobx",
@@ -15,7 +15,7 @@
     "url": "https://github.com/noru/use-mobx.git"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p ./tsconfig.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "publish": "npm publish --registry=https://registry.npmjs.org",

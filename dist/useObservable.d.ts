@@ -1,5 +1,5 @@
 import { AnnotationsMap } from 'mobx';
-import { DependencyList } from 'react';
+import { DependencyList, useEffect } from 'react';
 export declare type Store = Record<string, any>;
 /**
  *
@@ -9,3 +9,4 @@ export declare type Store = Record<string, any>;
  * @returns {Observable} store
  */
 export declare function useObservable<T extends Store>(initializer: T | (() => T), deps?: DependencyList, annotations?: AnnotationsMap<T, never>): T;
+export declare const useUpdateEffect: typeof useEffect;
