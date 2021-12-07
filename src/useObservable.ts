@@ -1,5 +1,5 @@
 import {
-  observable, AnnotationsMap, isObservable,
+  observable, AnnotationsMap, isObservable, isObservableArray, isObservableMap, isObservableSet,
 } from 'mobx'
 import {
   DependencyList, useCallback, useEffect, useRef, useState,
@@ -41,7 +41,7 @@ export function useObservable<T extends Store>(
 
   useAutorun(() => {
     // simply visit all props to keep reactive
-    keys.forEach(key => store[key])
+    traverse(store, keys)
     if (!initialized.current) {
       initialized.current = true
     } else {
@@ -61,4 +61,23 @@ export const useUpdateEffect: typeof useEffect = (effect, deps) => {
       return effect()
     }
   }, deps)
+}
+
+function traverse(obs, keys?: string[]): void {
+
+  if (!isObservable(obs)) {
+    return
+  }
+
+  if (isObservableArray(obs) || isObservableSet(obs) || isObservableMap(obs)) {
+    obs.forEach(i => traverse(i))
+  } else {
+    keys ||= Object.getOwnPropertyNames(obs) // toJS() can visit computed
+    keys.forEach(key => {
+      let prop = obs[key]
+      if (isObservable(prop)) {
+        traverse(prop)
+      }
+    })
+  }
 }

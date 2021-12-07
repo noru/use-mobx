@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks/native'
-import { configure, observable } from 'mobx'
+import { configure, isObservable, isObservableArray, observable } from 'mobx'
 import { useState } from 'react'
 import { useObservable } from '../src/useObservable'
 
@@ -11,7 +11,8 @@ function testWrapper(initializer) {
   let keys = Object.keys(typeof initializer === 'function' ? initializer() : initializer)
   let state = useObservable(initializer)
   let values = keys.reduce((res, key) => {
-    res[key] = state[key]
+    let val = state[key]
+    res[key] = Array.isArray(val) ? [...state[key]] : (typeof val === 'object' && val !== null) ? { ...val } : val
     return res
   }, {})
   return [state, values]
@@ -154,7 +155,51 @@ describe('useObservable', () => {
     expect(newValues.prop).toBe(2)
 
   })
+  test('support deep object', () => {
+    let obser = observable({ 
+      deep: {
+        val: 1,
+      }
+    })
+    const { result } = renderHook(() => testWrapper(obser))
 
+    let [store, values] = result.current
+
+    expect(obser).toBe(store)
+    expect(store.deep.val).toBe(1)
+    expect(values.deep.val).toBe(1)
+    act(() => {
+      obser.deep.val++
+    })
+    expect(store.deep.val).toBe(2)
+    expect(values.deep.val).toBe(1)
+
+    let [store2, newValues] = result.current
+    expect(store).toBe(store2)
+    expect(newValues.deep.val).toBe(2)
+  })
+
+  test('support array prop', () => {
+    let obser = observable({ 
+      arr: [1],
+    })
+    const { result } = renderHook(() => testWrapper(obser))
+
+    let [store, values] = result.current
+
+    expect(obser).toBe(store)
+    expect(store.arr[0]).toBe(1)
+    expect(values.arr[0]).toBe(1)
+    act(() => {
+      obser.arr[0]++
+    })
+    expect(store.arr[0]).toBe(2)
+    expect(values.arr[0]).toBe(1)
+
+    let [store2, newValues] = result.current
+    expect(store).toBe(store2)
+    expect(newValues.arr[0]).toBe(2)
+  })
 
   test('update when dependency', async () => {
 
@@ -210,5 +255,5 @@ describe('useObservable', () => {
     store = result.current.store
     expect(store.a).toBe(2)
   })
-})
 
+})

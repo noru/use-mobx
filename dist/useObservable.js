@@ -1,4 +1,4 @@
-import { observable, isObservable, } from 'mobx';
+import { observable, isObservable, isObservableArray, isObservableMap, isObservableSet, } from 'mobx';
 import { useCallback, useEffect, useRef, useState, } from 'react';
 import { useAutorun } from './useAutorun';
 /**
@@ -24,7 +24,7 @@ export function useObservable(initializer, deps = [], annotations) {
     useUpdateEffect(() => setState(_initializer()), [_initializer]);
     useAutorun(() => {
         // simply visit all props to keep reactive
-        keys.forEach(key => store[key]);
+        traverse(store, keys);
         if (!initialized.current) {
             initialized.current = true;
         }
@@ -46,3 +46,20 @@ export const useUpdateEffect = (effect, deps) => {
         }
     }, deps);
 };
+function traverse(obs, keys) {
+    if (!isObservable(obs)) {
+        return;
+    }
+    if (isObservableArray(obs) || isObservableSet(obs) || isObservableMap(obs)) {
+        obs.forEach(i => traverse(i));
+    }
+    else {
+        keys || (keys = Object.getOwnPropertyNames(obs)); // toJS() can visit computed
+        keys.forEach(key => {
+            let prop = obs[key];
+            if (isObservable(prop)) {
+                traverse(prop);
+            }
+        });
+    }
+}
