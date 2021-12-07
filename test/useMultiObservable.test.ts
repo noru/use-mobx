@@ -59,6 +59,17 @@ describe('useMultiObservable', () => {
     expect(count.render).toBe(3)
 
   })
+
+  test('typing', () => {
+    let ob1 = observable({ a: 1 })
+    let ob2 = observable({ b: 1 })
+
+    renderHook(() => {
+      let res: [typeof ob1, typeof ob2] = useMultiObservable(ob1, ob2)
+      // @ts-expect-error, wrong type
+      let res2: [typeof ob2, typeof ob1] = useMultiObservable(ob1, ob2)
+    })
+  })
 })
 
 
