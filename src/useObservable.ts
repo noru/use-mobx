@@ -2,8 +2,9 @@ import {
   observable, AnnotationsMap, isObservable, isObservableArray, isObservableMap, isObservableSet,
 } from 'mobx'
 import {
-  DependencyList, useCallback, useEffect, useRef, useState,
+  DependencyList, useCallback, useRef, useState,
 } from 'react'
+import { useUpdateEffect } from './helper'
 import { useAutorun } from './useAutorun'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,18 +50,6 @@ export function useObservable<T extends Store>(
     }
   }, [store])
   return store
-}
-
-// like: https://github.com/streamich/react-use/blob/master/src/useUpdateEffect.ts
-export const useUpdateEffect: typeof useEffect = (effect, deps) => {
-  let firstTime = useRef(true)
-  useEffect(() => {
-    if (firstTime.current) {
-      firstTime.current = false
-    } else {
-      return effect()
-    }
-  }, deps)
 }
 
 function traverse(obs, keys?: string[]): void {

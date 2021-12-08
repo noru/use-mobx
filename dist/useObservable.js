@@ -1,5 +1,6 @@
 import { observable, isObservable, isObservableArray, isObservableMap, isObservableSet, } from 'mobx';
-import { useCallback, useEffect, useRef, useState, } from 'react';
+import { useCallback, useRef, useState, } from 'react';
+import { useUpdateEffect } from './helper';
 import { useAutorun } from './useAutorun';
 /**
  *
@@ -34,18 +35,6 @@ export function useObservable(initializer, deps = [], annotations) {
     }, [store]);
     return store;
 }
-// like: https://github.com/streamich/react-use/blob/master/src/useUpdateEffect.ts
-export const useUpdateEffect = (effect, deps) => {
-    let firstTime = useRef(true);
-    useEffect(() => {
-        if (firstTime.current) {
-            firstTime.current = false;
-        }
-        else {
-            return effect();
-        }
-    }, deps);
-};
 function traverse(obs, keys) {
     if (!isObservable(obs)) {
         return;

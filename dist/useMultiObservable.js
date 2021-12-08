@@ -1,7 +1,7 @@
 import { isObservable } from 'mobx';
 import { useCallback, useRef, useState, } from 'react';
+import { useUpdateEffect } from './helper';
 import { useAutorun } from './useAutorun';
-import { useUpdateEffect } from './useObservable';
 export function useMultiObservable(...stores) {
     let deps = [...stores];
     stores.forEach((s, i) => {

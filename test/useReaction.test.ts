@@ -7,7 +7,7 @@ configure({
   enforceActions: 'never',
 })
 
-describe('useWhen', () => {
+describe('useReaction', () => {
 
   test('effect run when watched value change', async () => {
 

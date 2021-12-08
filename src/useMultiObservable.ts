@@ -2,8 +2,9 @@ import { isObservable } from 'mobx'
 import {
   useCallback, useRef, useState,
 } from 'react'
+import { useUpdateEffect } from './helper'
 import { useAutorun } from './useAutorun'
-import { Store, useUpdateEffect } from './useObservable'
+import { Store } from './useObservable'
 
 export function useMultiObservable<T extends Array<Store>>(...stores: T): T {
   let deps = [...stores]
