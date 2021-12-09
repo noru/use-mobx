@@ -1,6 +1,6 @@
 {
   "name": "use-mobx-observable",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Using mobx observable with react hooks",
   "keywords": [
     "mobx",

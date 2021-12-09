@@ -50,10 +50,11 @@ export function useObservable<T extends Store>(
 
 function traverse(obs, visited = new Set): void {
 
-  if (!isObservable(obs) || visited.has(obs)) {
+  if (visited.has(obs) || !isObservable(obs)) {
     return
   }
 
+  visited.add(obs)
   if (isObservableArray(obs) || isObservableSet(obs) || isObservableMap(obs)) {
     obs.forEach(i => traverse(i, visited))
   } else {

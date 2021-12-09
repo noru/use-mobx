@@ -32,9 +32,10 @@ export function useObservable(initializer, deps = [], annotations) {
     return store;
 }
 function traverse(obs, visited = new Set) {
-    if (!isObservable(obs) || visited.has(obs)) {
+    if (visited.has(obs) || !isObservable(obs)) {
         return;
     }
+    visited.add(obs);
     if (isObservableArray(obs) || isObservableSet(obs) || isObservableMap(obs)) {
         obs.forEach(i => traverse(i, visited));
     }

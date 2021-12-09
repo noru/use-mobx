@@ -1,5 +1,7 @@
 import { renderHook, act } from '@testing-library/react-hooks/native'
-import { configure, isObservable, isObservableArray, observable } from 'mobx'
+import {
+  configure, observable,
+} from 'mobx'
 import { useState } from 'react'
 import { useObservable } from '../src/useObservable'
 
@@ -7,15 +9,25 @@ configure({
   enforceActions: 'never',
 })
 
-function testWrapper(initializer) {
-  let keys = Object.keys(typeof initializer === 'function' ? initializer() : initializer)
-  let state = useObservable(initializer)
-  let values = keys.reduce((res, key) => {
-    let val = state[key]
-    res[key] = Array.isArray(val) ? [...state[key]] : (typeof val === 'object' && val !== null) ? { ...val } : val
+function mapObservable2Json(obs, visited = new Set) {
+  if (visited.has(obs)) {
+    return
+  }
+  visited.add(obs)
+  // unlike toJS(), also map computed props
+  let keys = Object.getOwnPropertyNames(obs)
+  let json = keys.reduce((res, key) => {
+    let val = obs[key]
+    res[key] = Array.isArray(val) ? [...val] : (typeof val === 'object' && val !== null) ? mapObservable2Json(val, visited) : val
     return res
   }, {})
-  return [state, values]
+  return json
+}
+
+function testWrapper(initializer) {
+  let state = useObservable(typeof initializer === 'function' ? initializer() : initializer)
+  let json = mapObservable2Json(state)
+  return [state, json]
 }
 
 describe('useObservable', () => {
@@ -156,10 +168,13 @@ describe('useObservable', () => {
 
   })
   test('support deep object', () => {
-    let obser = observable({ 
+    let obser = observable({
       deep: {
         val: 1,
-      }
+        get valPlus1() {
+          return this.val + 1
+        },
+      },
     })
     const { result } = renderHook(() => testWrapper(obser))
 
@@ -177,10 +192,17 @@ describe('useObservable', () => {
     let [store2, newValues] = result.current
     expect(store).toBe(store2)
     expect(newValues.deep.val).toBe(2)
+    expect(newValues.deep.valPlus1).toBe(3)
+    act(() => {
+      obser.deep.val += 10
+    })
+    expect(store.deep.val).toBe(12)
+    expect(result.current[1].deep.val).toBe(12)
+    expect(result.current[1].deep.valPlus1).toBe(13)
   })
 
   test('support array prop', () => {
-    let obser = observable({ 
+    let obser = observable({
       arr: [1],
     })
     const { result } = renderHook(() => testWrapper(obser))
@@ -201,7 +223,30 @@ describe('useObservable', () => {
     expect(newValues.arr[0]).toBe(2)
   })
 
-  test('update when dependency', async () => {
+  test('support circular object', () => {
+    let a = observable({
+      val: 1,
+      prop: null as any,
+    })
+    let b = {
+      val: 2,
+      prop: a,
+    }
+    a.prop = b
+    const { result } = renderHook(() => testWrapper(a))
+    expect(result.current[0].val).toBe(1)
+    expect(result.current[0].prop.val).toBe(2)
+
+    act(() => {
+      a.val++
+      a.prop.val++
+    })
+    expect(result.current[0].val).toBe(2)
+    expect(result.current[0].prop.val).toBe(3)
+
+  })
+
+  test('update when dependency changed', async () => {
 
     let external = observable({ val: 1 })
     let external2 = observable({ val: 2 })
