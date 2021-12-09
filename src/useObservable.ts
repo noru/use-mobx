@@ -28,21 +28,17 @@ export function useObservable<T extends Store>(
   let _initializer = useCallback(() => {
     initialized.current = false
     let obj = typeof initializer === 'function' ? initializer() : initializer
-    let keys = Object.getOwnPropertyNames(obj)
-    return {
-      store: isObservable(obj) ? obj : observable(obj, annotations, { autoBind: true }),
-      keys,
-    }
+    return isObservable(obj) ? obj : observable(obj, annotations, { autoBind: true })
   }, deps)
 
-  let [{ store, keys }, setState] = useState(_initializer)
+  let [store, setState] = useState(_initializer)
   let [, forceUpdate] = useState(0)
 
   useUpdateEffect(() => setState(_initializer()), [_initializer])
 
   useAutorun(() => {
     // simply visit all props to keep reactive
-    traverse(store, keys)
+    traverse(store)
     if (!initialized.current) {
       initialized.current = true
     } else {
@@ -52,21 +48,19 @@ export function useObservable<T extends Store>(
   return store
 }
 
-function traverse(obs, keys?: string[]): void {
+function traverse(obs, visited = new Set): void {
 
-  if (!isObservable(obs)) {
+  if (!isObservable(obs) || visited.has(obs)) {
     return
   }
 
   if (isObservableArray(obs) || isObservableSet(obs) || isObservableMap(obs)) {
-    obs.forEach(i => traverse(i))
+    obs.forEach(i => traverse(i, visited))
   } else {
-    keys ||= Object.getOwnPropertyNames(obs) // toJS() can visit computed
+    let keys = Object.getOwnPropertyNames(obs) // toJS() can visit computed
     keys.forEach(key => {
       let prop = obs[key]
-      if (isObservable(prop)) {
-        traverse(prop)
-      }
+      traverse(prop, visited)
     })
   }
 }
