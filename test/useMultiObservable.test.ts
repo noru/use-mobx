@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { renderHook, act } from '@testing-library/react-hooks/native'
 import { configure, observable } from 'mobx'
 import { useMultiObservable } from '../src/useMultiObservable'
@@ -65,8 +66,11 @@ describe('useMultiObservable', () => {
     let ob2 = observable({ b: 1 })
 
     renderHook(() => {
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let res: [typeof ob1, typeof ob2] = useMultiObservable(ob1, ob2)
       // @ts-expect-error, wrong type
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let res2: [typeof ob2, typeof ob1] = useMultiObservable(ob1, ob2)
     })
   })
