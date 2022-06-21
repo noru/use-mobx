@@ -9,7 +9,7 @@ import { useAutorun } from './useAutorun'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Store = Record<string, any>
-
+let TimeoutId: any = null
 /**
  *
  * @param {T | () => Observable} initializer Observable initializer
@@ -21,6 +21,7 @@ export function useObservable<T extends Store>(
   initializer: T | (() => T),
   deps: DependencyList = [],
   annotations?: AnnotationsMap<T, never>,
+  onUpdate?: (store: T) => void,
 ): T {
 
   let initialized = useRef(false)
@@ -42,7 +43,11 @@ export function useObservable<T extends Store>(
     if (!initialized.current) {
       initialized.current = true
     } else {
-      forceUpdate(i => ++i)
+      clearTimeout(TimeoutId as any)
+      TimeoutId = setTimeout(() => {
+        forceUpdate(i => ++i)
+        onUpdate && onUpdate(store)
+      })
     }
   }, [store])
   return store
