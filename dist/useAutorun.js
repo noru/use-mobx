@@ -1,7 +1,7 @@
-import { autorun } from 'mobx';
+import { autorun, } from 'mobx';
 import { useEffect } from 'react';
-export function useAutorun(effect, deps = []) {
+export function useAutorun(effect, deps = [], options = {}) {
     useEffect(() => {
-        return autorun(effect);
+        return autorun(effect, options);
     }, deps);
 }

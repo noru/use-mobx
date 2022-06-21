@@ -1,23 +1,22 @@
-import { observable, isObservable, isObservableArray, isObservableMap, isObservableSet, } from 'mobx';
+import { observable, isObservable, isObservableArray, isObservableMap, isObservableSet, isAction, } from 'mobx';
 import { useCallback, useRef, useState, } from 'react';
-import { useUpdateEffect } from './helper';
+import { debounceUpdate, useRerender, useUpdateEffect, } from './helper';
 import { useAutorun } from './useAutorun';
 /**
- *
  * @param {T | () => Observable} initializer Observable initializer
  * @param {Array} deps Dependency list of initializer. When changed, a new observable will be created
- * @param {AnnotationsMap<T, never>)} annotations MobX annotations. See https://mobx.js.org/observable-state.html#available-annotations
+ * @param {UseObservableOptions<T>)} options
  * @returns {Observable} store
  */
-export function useObservable(initializer, deps = [], annotations) {
+export function useObservable(initializer, deps = [], options = {}) {
     let initialized = useRef(false);
     let _initializer = useCallback(() => {
         initialized.current = false;
         let obj = typeof initializer === 'function' ? initializer() : initializer;
-        return isObservable(obj) ? obj : observable(obj, annotations, { autoBind: true });
+        return isObservable(obj) ? obj : observable(obj, options.annotations, { autoBind: true });
     }, deps);
     let [store, setState] = useState(_initializer);
-    let [, forceUpdate] = useState(0);
+    let rerender = useRerender();
     useUpdateEffect(() => setState(_initializer()), [_initializer]);
     useAutorun(() => {
         // simply visit all props to keep reactive
@@ -26,13 +25,20 @@ export function useObservable(initializer, deps = [], annotations) {
             initialized.current = true;
         }
         else {
-            forceUpdate(i => ++i);
+            let cb = () => options.onUpdate && options.onUpdate(store);
+            if (options.nonBatch) {
+                rerender();
+                cb();
+            }
+            else {
+                debounceUpdate(() => rerender(), cb);
+            }
         }
-    }, [store]);
+    }, [store], options.autorunOptions);
     return store;
 }
 function traverse(obs, visited = new Set) {
-    if (visited.has(obs) || !isObservable(obs)) {
+    if (visited.has(obs) || !isObservable(obs) || isAction(obs)) {
         return;
     }
     visited.add(obs);
