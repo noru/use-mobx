@@ -4,7 +4,7 @@ import {
   configure, observable,
 } from 'mobx'
 import { useState } from 'react'
-import { useObservable } from '../src/useObservable'
+import { useObservable, UseObservableOptions } from '../src/useObservable'
 
 configure({
   enforceActions: 'never',
@@ -25,8 +25,8 @@ function mapObservable2Json(obs, visited = new Set) {
   return json
 }
 
-function testWrapper(initializer, onUpdate?) {
-  let state = useObservable(typeof initializer === 'function' ? initializer() : initializer, undefined, undefined, onUpdate)
+function testWrapper(initializer, options: UseObservableOptions<any> = {}) {
+  let state = useObservable(typeof initializer === 'function' ? initializer() : initializer, undefined, options)
   let json = mapObservable2Json(state)
   return [state, json]
 }
@@ -314,13 +314,13 @@ describe('useObservable', () => {
     expect(store.a).toBe(2)
   })
 
-  test('batch multiple updates', async () => {
+  test('multiple updates: batch render', async () => {
 
     let called = 0
-    let increment = () => called++
+    let onUpdate = () => called++
     const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
-    }, increment))
+    }, { onUpdate }))
 
     let [store] = result.current
     await act(() => {
@@ -333,6 +333,29 @@ describe('useObservable', () => {
     })
     let [store2, newValues] = result.current
     expect(called).toBe(1)
+    expect(store).toBe(store2)
+    expect(newValues.prop).toBe(6)
+  })
+
+  test('multiple updates: non-batch render', async () => {
+
+    let called = 0
+    let onUpdate = () => called++
+    const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+      return { prop: 1 }
+    }, { onUpdate, nonBatch: true }))
+
+    let [store] = result.current
+    await act(() => {
+      store.prop++
+      store.prop++
+      store.prop++
+      store.prop++
+      store.prop++
+      return waitForNextUpdate()
+    })
+    let [store2, newValues] = result.current
+    expect(called).toBe(5)
     expect(store).toBe(store2)
     expect(newValues.prop).toBe(6)
   })

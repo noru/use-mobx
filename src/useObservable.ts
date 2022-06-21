@@ -1,27 +1,37 @@
 import {
-  observable, AnnotationsMap, isObservable, isObservableArray, isObservableMap, isObservableSet, isAction,
+  observable, AnnotationsMap, isObservable, isObservableArray, isObservableMap, isObservableSet, isAction, IAutorunOptions,
 } from 'mobx'
 import {
   DependencyList, useCallback, useRef, useState,
 } from 'react'
-import { useUpdateEffect } from './helper'
+import {
+  debounceUpdate, useRerender, useUpdateEffect,
+} from './helper'
 import { useAutorun } from './useAutorun'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Store = Record<string, any>
-let TimeoutId: any = null
+
+export type UseObservableOptions<T> = {
+  // MobX annotations. See https://mobx.js.org/observable-state.html#available-annotations
+  annotations?: AnnotationsMap<T, never>
+  // Called on every update
+  onUpdate?: (store: T) => void
+  // Mobx autorun options. See https://mobx.js.org/reactions.html#options-
+  autorunOptions?: IAutorunOptions
+  // By default, multiple observable update will be combined and rerender. For special case, if one rerender per update is needed, set nonBatch to true.
+  nonBatch?: boolean
+}
 /**
- *
  * @param {T | () => Observable} initializer Observable initializer
  * @param {Array} deps Dependency list of initializer. When changed, a new observable will be created
- * @param {AnnotationsMap<T, never>)} annotations MobX annotations. See https://mobx.js.org/observable-state.html#available-annotations
+ * @param {UseObservableOptions<T>)} options
  * @returns {Observable} store
  */
 export function useObservable<T extends Store>(
   initializer: T | (() => T),
   deps: DependencyList = [],
-  annotations?: AnnotationsMap<T, never>,
-  onUpdate?: (store: T) => void,
+  options: UseObservableOptions<T> = {},
 ): T {
 
   let initialized = useRef(false)
@@ -29,11 +39,11 @@ export function useObservable<T extends Store>(
   let _initializer = useCallback(() => {
     initialized.current = false
     let obj = typeof initializer === 'function' ? initializer() : initializer
-    return isObservable(obj) ? obj : observable(obj, annotations, { autoBind: true })
+    return isObservable(obj) ? obj : observable(obj, options.annotations, { autoBind: true })
   }, deps)
 
   let [store, setState] = useState(_initializer)
-  let [, forceUpdate] = useState(0)
+  let rerender = useRerender()
 
   useUpdateEffect(() => setState(_initializer()), [_initializer])
 
@@ -43,13 +53,15 @@ export function useObservable<T extends Store>(
     if (!initialized.current) {
       initialized.current = true
     } else {
-      clearTimeout(TimeoutId as any)
-      TimeoutId = setTimeout(() => {
-        forceUpdate(i => ++i)
-        onUpdate && onUpdate(store)
-      })
+      let cb = () => options.onUpdate && options.onUpdate(store)
+      if (options.nonBatch) {
+        rerender()
+        cb()
+      } else {
+        debounceUpdate(() => rerender(), cb)
+      }
     }
-  }, [store])
+  }, [store], options.autorunOptions)
   return store
 }
 
