@@ -1,10 +1,13 @@
-import { autorun, IReactionPublic } from 'mobx'
+import {
+  autorun, IAutorunOptions, IReactionPublic,
+} from 'mobx'
 import { DependencyList, useEffect } from 'react'
 
-export function useAutorun(effect: (reaction?: IReactionPublic) => unknown, deps: DependencyList = []) {
+type Effect = (reaction?: IReactionPublic) => unknown
 
+export function useAutorun(effect: Effect, deps: DependencyList = [], options: IAutorunOptions = {}): void {
   useEffect(() => {
-    return autorun(effect)
+    return autorun(effect, options)
   }, deps)
 
 }
