@@ -1,5 +1,5 @@
 import {
-  observable, AnnotationsMap, isObservable, isObservableArray, isObservableMap, isObservableSet,
+  observable, AnnotationsMap, isObservable, isObservableArray, isObservableMap, isObservableSet, isAction,
 } from 'mobx'
 import {
   DependencyList, useCallback, useRef, useState,
@@ -50,7 +50,7 @@ export function useObservable<T extends Store>(
 
 function traverse(obs, visited = new Set): void {
 
-  if (visited.has(obs) || !isObservable(obs)) {
+  if (visited.has(obs) || !isObservable(obs) || isAction(obs)) {
     return
   }
 
