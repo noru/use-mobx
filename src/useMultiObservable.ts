@@ -6,6 +6,13 @@ import { useUpdateEffect } from './helper'
 import { useAutorun } from './useAutorun'
 import { Store } from './useObservable'
 
+
+/**
+ *
+ * @param stores
+ * @returns
+ * @category Hooks
+ */
 export function useMultiObservable<T extends Array<Store>>(...stores: T): T {
   let deps = [...stores]
   stores.forEach((s, i) => {

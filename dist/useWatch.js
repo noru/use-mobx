@@ -2,11 +2,13 @@ import { reaction, } from 'mobx';
 import { useEffect, useState, } from 'react';
 import { useUpdateEffect } from './helper';
 /**
- * Like useReaction, but immediately return watched value
+ * A helper hook. Like [[`useReaction`]], but immediately return watched value
+ *
  * @param watcher
  * @param deps
  * @param opt
  * @returns
+ * @category Hooks
  */
 export function useWatch(watcher, deps = [], opt) {
     let [watched, setWatched] = useState([watcher(), undefined]);

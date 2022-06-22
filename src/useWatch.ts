@@ -7,11 +7,13 @@ import {
 import { useUpdateEffect } from './helper'
 
 /**
- * Like useReaction, but immediately return watched value
+ * A helper hook. Like [[`useReaction`]], but immediately return watched value
+ *
  * @param watcher
  * @param deps
  * @param opt
  * @returns
+ * @category Hooks
  */
 export function useWatch<T, FireImmediately extends boolean = false>(
   watcher: () => T,

@@ -1,6 +1,6 @@
 {
   "name": "use-mobx-observable",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Using mobx observable with react hooks",
   "keywords": [
     "mobx",
@@ -16,11 +16,11 @@
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
-    "build:doc": "typedoc ./src/index.ts",
+    "build:doc": "typedoc",
     "test": "jest",
     "test:watch": "jest --watch",
     "pub": "npm publish --registry=https://registry.npmjs.org",
-    "pub:complete": "npm run test && npm run build && npm run build:doc && npm run pub",
+    "pub:complete": "npm run test && npm version patch && npm run build && npm run build:doc && npm run pub",
     "lint": "eslint ./src/**/* ./test/**/*"
   },
   "author": "drew.xiu",
