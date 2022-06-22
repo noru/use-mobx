@@ -16,9 +16,11 @@
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
+    "build:doc": "typedoc ./src/index.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "pub": "npm publish --registry=https://registry.npmjs.org",
+    "pub:complete": "npm run test && npm run build && npm run build:doc && npm run pub",
     "lint": "eslint ./src/**/* ./test/**/*"
   },
   "author": "drew.xiu",

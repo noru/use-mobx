@@ -1,7 +1,5 @@
 # use-mobx-observable
 
-- EARLY VERSION, NOT STABLE
-
 Use mobx observable like `useState`
 
 ### Install
@@ -10,6 +8,9 @@ Use mobx observable like `useState`
 npm install mobx@^6 react@^16.8 # peer dependencies
 npm install use-mobx-observable
 ```
+
+👉[API Docs](https://noru.github.io/use-mobx)👈
+
 
 ### Problem
 
