@@ -320,7 +320,7 @@ describe('useObservable', () => {
     let onUpdate = () => called++
     const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
-    }, { onUpdate }))
+    }, { onUpdate, batch: true }))
 
     let [store] = result.current
     await act(() => {
@@ -343,7 +343,7 @@ describe('useObservable', () => {
     let onUpdate = () => called++
     const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
-    }, { onUpdate, nonBatch: true }))
+    }, { onUpdate }))
 
     let [store] = result.current
     await act(() => {

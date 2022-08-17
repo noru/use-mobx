@@ -53,12 +53,12 @@ export function useObservable(initializer, deps = [], options = {}) {
         }
         else {
             let cb = () => options.onUpdate && options.onUpdate(store);
-            if (options.nonBatch) {
-                rerender();
-                cb();
+            if (options.batch) {
+                debounceUpdate(() => rerender(), cb);
             }
             else {
-                debounceUpdate(() => rerender(), cb);
+                rerender();
+                cb();
             }
         }
     }, [store], options.autorunOptions);
