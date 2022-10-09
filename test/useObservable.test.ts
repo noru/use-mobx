@@ -10,7 +10,7 @@ configure({
   enforceActions: 'never',
 })
 
-function mapObservable2Json(obs, visited = new Set) {
+export function mapObservable2Json(obs, visited = new Set) {
   if (visited.has(obs)) {
     return
   }
@@ -33,7 +33,7 @@ function testWrapper(initializer, options: UseObservableOptions<any> = {}) {
 
 describe('useObservable', () => {
   test('be reactive to normal props', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
     }))
 
@@ -54,7 +54,7 @@ describe('useObservable', () => {
   })
 
   test('be reactive to computed props', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
       return {
         prop: 1,
         get computedProp() {
@@ -80,7 +80,7 @@ describe('useObservable', () => {
   })
 
   test('be reactive to actions', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
       return {
         prop: 1,
         action() {
@@ -108,7 +108,7 @@ describe('useObservable', () => {
   test('be reactive to external observable', async () => {
 
     let external = observable({ val: 1 })
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
       return {
         get prop() {
           return external.val
@@ -133,7 +133,7 @@ describe('useObservable', () => {
   })
 
   test('supports plain object', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper({ prop: 1 }))
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper({ prop: 1 }))
 
     let [store, values] = result.current
     expect(store.prop).toBe(1)
@@ -155,7 +155,7 @@ describe('useObservable', () => {
 
     let obser = observable({ prop: 1 }, undefined, { autoBind: true })
 
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(obser))
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(obser))
 
     let [store, values] = result.current
 
@@ -183,7 +183,7 @@ describe('useObservable', () => {
         },
       },
     })
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(obser))
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(obser))
 
     let [store, values] = result.current
 
@@ -214,7 +214,7 @@ describe('useObservable', () => {
     let obser = observable({
       arr: [1],
     })
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(obser))
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(obser))
 
     let [store, values] = result.current
 
@@ -243,7 +243,7 @@ describe('useObservable', () => {
       prop: a,
     }
     a.prop = b
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(a))
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(a))
     expect(result.current[0].val).toBe(1)
     expect(result.current[0].prop.val).toBe(2)
 
@@ -274,7 +274,7 @@ describe('useObservable', () => {
       }, [store])
       return { store: local, setDep: setStore }
     }
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper())
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper())
 
     let { store, setDep } = result.current
     expect(store.a).toBe(1)
@@ -302,7 +302,7 @@ describe('useObservable', () => {
       }, [store])
       return { store: local, setDep: setStore }
     }
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper())
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper())
 
     let { store, setDep } = result.current
     expect(store.a).toBe(1)
@@ -318,7 +318,7 @@ describe('useObservable', () => {
 
     let called = 0
     let onUpdate = () => called++
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
     }, { onUpdate, batch: true }))
 
@@ -341,7 +341,7 @@ describe('useObservable', () => {
 
     let called = 0
     let onUpdate = () => called++
-    const { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
     }, { onUpdate }))
 

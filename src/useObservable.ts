@@ -6,7 +6,7 @@ import {
   DependencyList, useCallback, useRef, useState,
 } from 'react'
 import {
-  debounceUpdate, useRerender, useUpdateEffect,
+  debounceUpdate, traverse, useRerender, useUpdateEffect,
 } from './helper'
 import { useAutorun } from './useAutorun'
 
@@ -21,7 +21,7 @@ export type Store = Record<string, any>
 export type UseObservableOptions<T> = {
   /**  MobX annotations. See https://mobx.js.org/observable-state.html#available-annotations */
   annotations?: AnnotationsMap<T, never>
-  /** alled on every update */
+  /** A hook called on every update */
   onUpdate?: (store: T) => void
   /** Mobx autorun options. See https://mobx.js.org/reactions.html#options- */
   autorunOptions?: IAutorunOptions
@@ -96,22 +96,4 @@ export function useObservable<T extends Store>(
     }
   }, [store], options.autorunOptions)
   return store
-}
-
-function traverse(obs, visited = new Set): void {
-
-  if (visited.has(obs) || !isObservable(obs) || isAction(obs)) {
-    return
-  }
-
-  visited.add(obs)
-  if (isObservableArray(obs) || isObservableSet(obs) || isObservableMap(obs)) {
-    obs.forEach(i => traverse(i, visited))
-  } else {
-    let keys = Object.getOwnPropertyNames(obs) // toJS() can visit computed
-    keys.forEach(key => {
-      let prop = obs[key]
-      traverse(prop, visited)
-    })
-  }
 }
