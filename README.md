@@ -1,5 +1,8 @@
 # use-mobx-observable
 
+[![pages-build-deployment](https://github.com/noru/use-mobx/actions/workflows/pages/pages-build-deployment/badge.svg?branch=master)](https://github.com/noru/use-mobx/actions/workflows/pages/pages-build-deployment)
+[![npm](https://github.com/noru/use-mobx/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/noru/use-mobx/actions/workflows/npm-publish.yml)
+
 Use mobx observable like `useState`
 
 ### Install
