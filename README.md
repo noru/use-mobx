@@ -1,5 +1,10 @@
 # use-mobx-observable
 
+[![npm version](https://badge.fury.io/js/use-mobx-observable.svg)](https://badge.fury.io/js/use-mobx-observable)
+[![pages-build-deployment](https://github.com/noru/use-mobx/actions/workflows/pages/pages-build-deployment/badge.svg?branch=master)](https://github.com/noru/use-mobx/actions/workflows/pages/pages-build-deployment)
+[![npm](https://github.com/noru/use-mobx/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/noru/use-mobx/actions/workflows/npm-publish.yml)
+[![Coverage Status](https://coveralls.io/repos/github/noru/use-mobx/badge.svg?branch=master)](https://coveralls.io/github/noru/use-mobx?branch=master)
+
 Use mobx observable like `useState`
 
 ### Install
