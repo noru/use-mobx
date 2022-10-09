@@ -13,7 +13,7 @@ import { DependencyList, useEffect } from 'react'
  */
 export function useWhen(
   predicate: () => boolean,
-  effect: () => unknown = () => void(0),
+  effect: () => unknown,
   deps: DependencyList = [],
   options: IWhenOptions = {},
 ) {
