@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { renderHook, act } from '@testing-library/react-hooks/native'
 import {
-  configure, observable,
-} from 'mobx'
+  renderHook, act, waitFor,
+} from '@testing-library/react'
+import { configure, observable } from 'mobx'
 import { useState } from 'react'
 import { useObservable, UseObservableOptions } from '../src/useObservable'
 
@@ -33,7 +33,7 @@ function testWrapper(initializer, options: UseObservableOptions<any> = {}) {
 
 describe('useObservable', () => {
   test('be reactive to normal props', async () => {
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
     }))
 
@@ -42,7 +42,6 @@ describe('useObservable', () => {
     expect(values.prop).toBe(1)
     await act(() => {
       store.prop++
-      return waitForNextUpdate()
     })
     expect(store.prop).toBe(2)
     expect(values.prop).toBe(1)
@@ -54,7 +53,7 @@ describe('useObservable', () => {
   })
 
   test('be reactive to computed props', async () => {
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result } = renderHook(() => testWrapper(() => {
       return {
         prop: 1,
         get computedProp() {
@@ -68,7 +67,6 @@ describe('useObservable', () => {
     expect(values.computedProp).toBe(2)
     await act(() => {
       store.prop++
-      return waitForNextUpdate()
     })
     expect(store.computedProp).toBe(3)
     expect(values.computedProp).toBe(2)
@@ -80,7 +78,7 @@ describe('useObservable', () => {
   })
 
   test('be reactive to actions', async () => {
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result } = renderHook(() => testWrapper(() => {
       return {
         prop: 1,
         action() {
@@ -94,7 +92,6 @@ describe('useObservable', () => {
     expect(values.prop).toBe(1)
     await act(() => {
       store.action()
-      return waitForNextUpdate()
     })
     expect(store.prop).toBe(2)
     expect(values.prop).toBe(1)
@@ -108,7 +105,7 @@ describe('useObservable', () => {
   test('be reactive to external observable', async () => {
 
     let external = observable({ val: 1 })
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result } = renderHook(() => testWrapper(() => {
       return {
         get prop() {
           return external.val
@@ -121,7 +118,6 @@ describe('useObservable', () => {
     expect(values.prop).toBe(1)
     await act(() => {
       external.val += 1
-      return waitForNextUpdate()
     })
     expect(store.prop).toBe(2)
     expect(values.prop).toBe(1)
@@ -133,14 +129,13 @@ describe('useObservable', () => {
   })
 
   test('supports plain object', async () => {
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper({ prop: 1 }))
+    let { result } = renderHook(() => testWrapper({ prop: 1 }))
 
     let [store, values] = result.current
     expect(store.prop).toBe(1)
     expect(values.prop).toBe(1)
     await act(() => {
       store.prop++
-      return waitForNextUpdate()
     })
     expect(store.prop).toBe(2)
     expect(values.prop).toBe(1)
@@ -155,7 +150,7 @@ describe('useObservable', () => {
 
     let obser = observable({ prop: 1 }, undefined, { autoBind: true })
 
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(obser))
+    let { result } = renderHook(() => testWrapper(obser))
 
     let [store, values] = result.current
 
@@ -164,7 +159,6 @@ describe('useObservable', () => {
     expect(values.prop).toBe(1)
     await act(() => {
       obser.prop++
-      return waitForNextUpdate()
     })
     expect(store.prop).toBe(2)
     expect(values.prop).toBe(1)
@@ -183,7 +177,7 @@ describe('useObservable', () => {
         },
       },
     })
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(obser))
+    let { result } = renderHook(() => testWrapper(obser))
 
     let [store, values] = result.current
 
@@ -192,7 +186,6 @@ describe('useObservable', () => {
     expect(values.deep.val).toBe(1)
     await act(() => {
       obser.deep.val++
-      return waitForNextUpdate()
     })
     expect(store.deep.val).toBe(2)
     expect(values.deep.val).toBe(1)
@@ -203,7 +196,6 @@ describe('useObservable', () => {
     expect(newValues.deep.valPlus1).toBe(3)
     await act(() => {
       obser.deep.val += 10
-      return waitForNextUpdate()
     })
     expect(store.deep.val).toBe(12)
     expect(result.current[1].deep.val).toBe(12)
@@ -214,7 +206,7 @@ describe('useObservable', () => {
     let obser = observable({
       arr: [1],
     })
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(obser))
+    let { result } = renderHook(() => testWrapper(obser))
 
     let [store, values] = result.current
 
@@ -223,7 +215,6 @@ describe('useObservable', () => {
     expect(values.arr[0]).toBe(1)
     await act(() => {
       obser.arr[0]++
-      return waitForNextUpdate()
     })
     expect(store.arr[0]).toBe(2)
     expect(values.arr[0]).toBe(1)
@@ -243,14 +234,13 @@ describe('useObservable', () => {
       prop: a,
     }
     a.prop = b
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(a))
+    let { result } = renderHook(() => testWrapper(a))
     expect(result.current[0].val).toBe(1)
     expect(result.current[0].prop.val).toBe(2)
 
     await act(() => {
       a.val++
       a.prop.val++
-      return waitForNextUpdate()
     })
     expect(result.current[0].val).toBe(2)
     expect(result.current[0].prop.val).toBe(3)
@@ -274,16 +264,16 @@ describe('useObservable', () => {
       }, [store])
       return { store: local, setDep: setStore }
     }
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper())
+    let { result } = renderHook(() => testWrapper())
 
     let { store, setDep } = result.current
     expect(store.a).toBe(1)
     await act(() => {
       setDep(external2)
-      return waitForNextUpdate()
     })
     store = result.current.store
-    expect(store.a).toBe(2)
+    waitFor(() => expect(store.a).toBe(2))
+
 
   })
 
@@ -302,23 +292,22 @@ describe('useObservable', () => {
       }, [store])
       return { store: local, setDep: setStore }
     }
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper())
+    let { result } = renderHook(() => testWrapper())
 
     let { store, setDep } = result.current
     expect(store.a).toBe(1)
     await act(() => {
       setDep(external2)
-      return waitForNextUpdate()
     })
     store = result.current.store
-    expect(store.a).toBe(2)
+    waitFor(() => expect(store.a).toBe(2))
   })
 
   test('multiple updates: batch render', async () => {
 
     let called = 0
     let onUpdate = () => called++
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
     }, { onUpdate, batch: true }))
 
@@ -329,19 +318,20 @@ describe('useObservable', () => {
       store.prop++
       store.prop++
       store.prop++
-      return waitForNextUpdate()
     })
-    let [store2, newValues] = result.current
-    expect(called).toBe(1)
-    expect(store).toBe(store2)
-    expect(newValues.prop).toBe(6)
+    await waitFor(() => {
+      let [store2, newValues] = result.current
+      expect(called).toBe(1)
+      expect(store).toBe(store2)
+      expect(newValues.prop).toBe(6)
+    })
   })
 
   test('multiple updates: non-batch render', async () => {
 
     let called = 0
     let onUpdate = () => called++
-    let { result, waitForNextUpdate } = renderHook(() => testWrapper(() => {
+    let { result } = renderHook(() => testWrapper(() => {
       return { prop: 1 }
     }, { onUpdate }))
 
@@ -352,12 +342,13 @@ describe('useObservable', () => {
       store.prop++
       store.prop++
       store.prop++
-      return waitForNextUpdate()
     })
     let [store2, newValues] = result.current
-    expect(called).toBe(5)
-    expect(store).toBe(store2)
-    expect(newValues.prop).toBe(6)
+    await waitFor(() => {
+      expect(called).toBe(5)
+      expect(store).toBe(store2)
+      expect(newValues.prop).toBe(6)
+    })
   })
 
 

@@ -2,15 +2,22 @@ import {
   isAction, isObservable, isObservableArray, isObservableMap, isObservableSet,
 } from 'mobx'
 import {
-  useEffect, useState, useRef, useCallback,
+  useEffect, useState, useRef, useCallback, EffectCallback, DependencyList,
 } from 'react'
 
-// like: https://github.com/streamich/react-use/blob/master/src/useUpdateEffect.ts
-export const useUpdateEffect: typeof useEffect = (effect, deps) => {
+/**
+ * Like useEffect but skip the first time activation
+ *
+ * @param effect Imperative function that can return a cleanup function
+ * @param deps If present, effect will only activate if the values in the list change.
+ * @param strict If true, effect will activate once per deps change. Otherwise it will activate only once.
+ */
+export const useUpdateEffect = (effect: EffectCallback, deps: DependencyList, strict = true) => {
   let firstTime = useRef(true)
   useEffect(() => {
     if (firstTime.current) {
       firstTime.current = false
+      return strict ? () => { firstTime.current = true } : undefined
     } else {
       return effect()
     }

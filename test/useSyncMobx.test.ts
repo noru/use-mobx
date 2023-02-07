@@ -1,7 +1,6 @@
-/**
- * @jest-environment jsdom
- */
-import { renderHook, act } from '@testing-library/react'
+import {
+  renderHook, act, waitFor,
+} from '@testing-library/react'
 import { configure, observable } from 'mobx'
 import { useSyncMobX } from '../src/useSyncMobX'
 
@@ -26,7 +25,8 @@ describe('useSyncMobX', () => {
       store.prop = 2
     })
     rerender()
-    expect(result.current.prop).toBe(2)
+    await waitFor(() => expect(result.current.prop).toBe(2))
+
   })
 
 })

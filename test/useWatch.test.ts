@@ -1,4 +1,6 @@
-import { renderHook, act } from '@testing-library/react-hooks/native'
+import {
+  renderHook, act, waitFor,
+} from '@testing-library/react'
 import { configure, observable } from 'mobx'
 import { useState } from 'react'
 import { useWatch } from '../src'
@@ -46,7 +48,8 @@ describe('useWatch', () => {
       )
       return [...result, setDep, obs.a]
     })
-    expect(result.current[0]).toBe(false)
+
+    await waitFor(() => expect(result.current[0]).toBe(false))
 
     act(() => {
       obs.a = 42
@@ -57,14 +60,18 @@ describe('useWatch', () => {
       (result.current[2] as any)(42)
     })
 
-    expect(result.current[0]).toBe(false)
-    expect(result.current[1]).toBe(true)
+    await waitFor(() => {
+      expect(result.current[0]).toBe(false)
+      expect(result.current[1]).toBe(true)
+    })
 
     act(() => {
       obs.a = 43
     })
-    expect(result.current[0]).toBe(true)
-    expect(result.current[1]).toBe(false)
+    await waitFor(() => {
+      expect(result.current[0]).toBe(true)
+      expect(result.current[1]).toBe(false)
+    })
   })
 
 })

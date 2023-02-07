@@ -22,10 +22,10 @@ export function useWatch<T, FireImmediately extends boolean = false>(
 {
 
   let [watched, setWatched] = useState<[T, T?]>([watcher(), undefined])
-
   useUpdateEffect(() => {
-    setWatched([watcher(), watched[0]])
-  }, deps)
+    let res = watcher()
+    res !== watched[0] && setWatched([watcher(), watched[0]])
+  }, deps, false)
 
   useEffect(() => {
     return reaction<T, FireImmediately>(watcher, (curr, prev) => setWatched([curr, prev]), opt)

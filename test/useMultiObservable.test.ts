@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { renderHook, act } from '@testing-library/react-hooks/native'
+import { renderHook, act } from '@testing-library/react'
 import { configure, observable } from 'mobx'
 import { useMultiObservable } from '../src/useMultiObservable'
 
