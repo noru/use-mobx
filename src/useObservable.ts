@@ -78,7 +78,7 @@ export function useObservable<T extends Store>(
   let [store, setState] = useState(_initializer)
   let rerender = useRerender()
 
-  useUpdateEffect(() => setState(_initializer()), [_initializer])
+  useUpdateEffect(() => setState(_initializer()), [_initializer], false)
 
   useAutorun(() => {
     // simply visit all props to keep reactive

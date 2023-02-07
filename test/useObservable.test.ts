@@ -268,13 +268,11 @@ describe('useObservable', () => {
 
     let { store, setDep } = result.current
     expect(store.a).toBe(1)
-    await act(() => {
+    act(() => {
       setDep(external2)
     })
     store = result.current.store
     waitFor(() => expect(store.a).toBe(2))
-
-
   })
 
   test('plain object, update when dependency', async () => {

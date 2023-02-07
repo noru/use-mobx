@@ -36,7 +36,7 @@ export function useMultiObservable<T extends Array<Store>>(...stores: T): T {
   let [storeWithKeys, setState] = useState(_initializer)
   let [, forceUpdate] = useState(0)
 
-  useUpdateEffect(() => setState(_initializer()), [_initializer])
+  useUpdateEffect(() => setState(_initializer()), [_initializer], false)
 
   useAutorun(() => {
     // simply visit all props to keep reactive
