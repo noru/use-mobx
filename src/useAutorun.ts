@@ -1,7 +1,9 @@
 import {
   autorun, IAutorunOptions, IReactionPublic,
 } from 'mobx'
-import { DependencyList, useEffect } from 'react'
+import {
+  DependencyList, useEffect, useMemo, useState,
+} from 'react'
 
 type Effect = (reaction?: IReactionPublic) => unknown
 
@@ -13,8 +15,9 @@ type Effect = (reaction?: IReactionPublic) => unknown
  * @category Hooks
  */
 export function useAutorun(effect: Effect, deps: DependencyList = [], options: IAutorunOptions = {}): void {
+  let disposer = useMemo(() => autorun(effect, options), deps)
   useEffect(() => {
-    return autorun(effect, options)
-  }, deps)
+    return disposer
+  }, [disposer])
 
 }
