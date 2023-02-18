@@ -301,30 +301,6 @@ describe('useObservable', () => {
     waitFor(() => expect(store.a).toBe(2))
   })
 
-  test('multiple updates: batch render', async () => {
-
-    let called = 0
-    let onUpdate = () => called++
-    let { result } = renderHook(() => testWrapper(() => {
-      return { prop: 1 }
-    }, { onUpdate, batch: true }))
-
-    let [store] = result.current
-    await act(() => {
-      store.prop++
-      store.prop++
-      store.prop++
-      store.prop++
-      store.prop++
-    })
-    await waitFor(() => {
-      let [store2, newValues] = result.current
-      expect(called).toBe(1)
-      expect(store).toBe(store2)
-      expect(newValues.prop).toBe(6)
-    })
-  })
-
   test('multiple updates: non-batch render', async () => {
 
     let called = 0

@@ -25,8 +25,6 @@ export type UseObservableOptions<T> = {
   onUpdate?: (store: T) => void
   /** Mobx autorun options. See https://mobx.js.org/reactions.html#options- */
   autorunOptions?: IAutorunOptions
-  /** By default, each update will be run synchronously. Set this flat to true if you want to batch multiple update and render once. */
-  batch?: boolean
 }
 /**
  * React hooks to make current component reactive to mobx observables, both locally and externally.
@@ -86,13 +84,8 @@ export function useObservable<T extends Store>(
     if (!initialized.current) {
       initialized.current = true
     } else {
-      let cb = () => options.onUpdate && options.onUpdate(store)
-      if (options.batch) {
-        debounceUpdate(() => rerender(), cb)
-      } else {
-        rerender()
-        cb()
-      }
+      rerender()
+      options.onUpdate && options.onUpdate(store)
     }
   }, [store], options.autorunOptions)
   return store
