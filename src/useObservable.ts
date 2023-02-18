@@ -3,11 +3,9 @@ import {
   isObservable, isObservableArray, isObservableMap, isObservableSet, isAction,
 } from 'mobx'
 import {
-  DependencyList, useCallback, useRef, useState,
+  DependencyList, useCallback, useEffect, useMemo, useRef, useState,
 } from 'react'
-import {
-  debounceUpdate, traverse, useRerender, useUpdateEffect,
-} from './helper'
+import { traverse, useRerender } from './helper'
 import { useAutorun } from './useAutorun'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,10 +71,16 @@ export function useObservable<T extends Store>(
     return isObservable(obj) ? obj : observable(obj, options.annotations, { autoBind: true })
   }, deps)
 
-  let [store, setState] = useState(_initializer)
+  let _store = useMemo(() => _initializer(), [_initializer])
+  let [store, setState] = useState(_store)
+
   let rerender = useRerender()
 
-  useUpdateEffect(() => setState(_initializer()), [_initializer], false)
+  useEffect(() => {
+    if (_store !== store) {
+      setState(_store)
+    }
+  }, [_store, store])
 
   useAutorun(() => {
     // simply visit all props to keep reactive
@@ -88,5 +92,6 @@ export function useObservable<T extends Store>(
       options.onUpdate && options.onUpdate(store)
     }
   }, [store], options.autorunOptions)
+
   return store
 }

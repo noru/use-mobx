@@ -93,9 +93,6 @@ function MyComponent() {
   // Be ware of the performance impact: any props change will trigger a rerender.
   useObservable(store)
 
-  // or, a helper for multiple stores
-  useMultiObservables(store, store2, store3)
-
   return (
     <div>
       <h1>{store.countText}</h1>

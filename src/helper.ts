@@ -14,30 +14,25 @@ import {
  */
 export const useUpdateEffect = (effect: EffectCallback, deps: DependencyList, strict = true) => {
   let firstTime = useRef(true)
+  let reset = useCallback(() => {
+    if (strict) {
+      firstTime.current = true
+    }
+  }, [])
+  let disposer
   useEffect(() => {
     if (firstTime.current) {
       firstTime.current = false
-      return strict ? () => { firstTime.current = true } : undefined
     } else {
-      return effect()
+      disposer = effect()
     }
+    return () => (reset(), disposer?.())
   }, deps)
 }
 
 export function useRerender() {
   let [, updater] = useState(0)
   return useCallback(() => updater(i => ++i), [updater])
-}
-
-let timeoutId: any = null
-export function debounceUpdate(updater, callback) {
-  // @ts-ignore
-  clearTimeout(timeoutId)
-  // @ts-ignore
-  timeoutId = setTimeout(() => {
-    updater()
-    callback()
-  })
 }
 
 export function traverse(obs, visited = new Set): void {

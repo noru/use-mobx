@@ -2,9 +2,8 @@ import {
   reaction, IReactionOptions,
 } from 'mobx'
 import {
-  DependencyList, useEffect, useState,
+  DependencyList, useEffect, useMemo, useState,
 } from 'react'
-import { useUpdateEffect } from './helper'
 
 /**
  * A helper hook. Like [[`useReaction`]], but immediately return watched value
@@ -21,13 +20,13 @@ export function useWatch<T, FireImmediately extends boolean = false>(
   opt?: IReactionOptions<T, FireImmediately>)
 {
 
-  let [watched, setWatched] = useState<[T, T?]>([watcher(), undefined])
-  useUpdateEffect(() => {
-    let res = watcher()
-    res !== watched[0] && setWatched([watcher(), watched[0]])
-  }, deps, false)
+  let result = useMemo(() => watcher(), deps)
+  let [watched, setWatched] = useState<[T, T?]>([result, undefined])
 
   useEffect(() => {
+    if (watched[0] !== result) {
+      setWatched([result, watched[0]])
+    }
     return reaction<T, FireImmediately>(watcher, (curr, prev) => setWatched([curr, prev]), opt)
   }, deps)
   return watched
