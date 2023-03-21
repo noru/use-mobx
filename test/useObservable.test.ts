@@ -11,7 +11,7 @@ configure({
 })
 
 export function mapObservable2Json(obs, visited = new Set) {
-  if (visited.has(obs)) {
+  if (visited.has(obs) || obs == null) {
     return
   }
   visited.add(obs)
@@ -50,6 +50,13 @@ describe('useObservable', () => {
     expect(store).toBe(store2)
     expect(newValues.prop).toBe(2)
 
+  })
+
+  test('null/undefined', async () => {
+    let nullish = renderHook(() => useObservable(null))
+    expect(nullish.result.current).toBe(null)
+    let undef = renderHook(() => useObservable(undefined))
+    expect(undef.result.current).toBe(undefined)
   })
 
   test('be reactive to computed props', async () => {

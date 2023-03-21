@@ -9,7 +9,7 @@ import { traverse, useRerender } from './helper'
 import { useAutorun } from './useAutorun'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Store = Record<string, any>
+export type Store = Record<string, any> | null | undefined
 
 
 /**
@@ -68,7 +68,7 @@ export function useObservable<T extends Store>(
   let _initializer = useCallback(() => {
     initialized.current = false
     let obj = typeof initializer === 'function' ? initializer() : initializer
-    return isObservable(obj) ? obj : observable(obj, options.annotations, { autoBind: true })
+    return isObservable(obj) ? obj : obj == null ? obj : observable(obj, options.annotations, { autoBind: true })
   }, deps)
 
   let _store = useMemo(() => _initializer(), [_initializer])
