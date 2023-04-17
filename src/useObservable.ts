@@ -83,6 +83,10 @@ export function useObservable<T extends Store>(
   }, [_store, store])
 
   useAutorun(() => {
+    if (globalThis['__auto_wrap_mobx_observer_hoc__']) {
+      // custom jsx runtime is enabled, observer hoc is applied to all components.
+      return
+    }
     // simply visit all props to keep reactive
     traverse(store)
     if (!initialized.current) {

@@ -1,6 +1,6 @@
 {
   "name": "use-mobx-observable",
-  "version": "1.0.7",
+  "version": "1.1.0-beta.0",
   "description": "Using mobx observable with react hooks",
   "keywords": [
     "mobx",
@@ -9,6 +9,23 @@
     "observable"
   ],
   "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json",
+    "./jsx-runtime": "./jsx-runtime.js",
+    "./jsx-dev-runtime": "./jsx-dev-runtime.js"
+  },
+  "files": [
+    "dist/",
+    "auto-wrap-observer",
+    "README.md",
+    "LICENSE.md",
+    "jsx-runtime.js",
+    "jsx-dev-runtime.js",
+    "*.d.ts"
+  ],
   "homepage": "https://github.com/noru/use-mobx#readme",
   "repository": {
     "type": "git",
@@ -28,7 +45,10 @@
   "license": "MIT",
   "peerDependencies": {
     "mobx": ">=6",
-    "react": ">=16.8"
+    "react": ">=17"
+  },
+  "optionalDependencies": {
+    "mobx-react-lite": ">=3"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.0",
