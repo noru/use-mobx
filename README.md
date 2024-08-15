@@ -105,27 +105,3 @@ function MyComponent() {
 }
 
 ```
-
-## Automatically wrap `observer` HOC
-
-Since React 17, jsx transformation is done via `react/run-time` instead of `React.createElement`. Typescript 4.1 introduced new [jsx options](https://www.typescriptlang.org/tsconfig#jsx) which enabled customized `jsx` factory.
-
-Hence, automatically wrap all your components with [`observer`](https://mobx.js.org/api.html#observer) can be easily done via change your `tsconfig.json`:
-
-
-```json
-{
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
-    "jsx": "react-jsx",
-    "jsxImportSource": "use-mobx-observable"
-  }
-}
-
-```
-
-If you choose this way, please remember install `mobx-react-lite`. Check [auto-wrap-observer/wrap-jsx.js](auto-wrap-observer/wrap-jsx.js) for detail.
-
-### Performance Impact?
-[TLDR;](https://mobx.js.org/react-integration.html#always-read-observables-inside-observer-components) No, nothing you should worry about
